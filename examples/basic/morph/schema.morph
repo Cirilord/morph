@@ -27,10 +27,10 @@ type CreateUserBody {
   email String @map("usr_mail")
 }
 
-resource users {
+resource Users {
   path = "/users"
 
-  action list {
+  action List {
     path = "/"
     method   = GET
     headers  = AuthHeaders
@@ -38,7 +38,7 @@ resource users {
     response = User[]
   }
 
-  action getById {
+  action GetById {
     path     = "/:id/:name?"
     method   = GET
     params   = UserIdParams
@@ -46,7 +46,7 @@ resource users {
     response = User
   }
 
-  action create {
+  action Create {
     path = "/"
     method   = POST
     headers  = AuthHeaders

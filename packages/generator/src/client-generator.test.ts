@@ -39,10 +39,10 @@ describe('generateMorphClient', () => {
         name String @map("usr_name")
       }
 
-      resource users {
+      resource Users {
         path = "/users"
 
-        action list {
+        action List {
           path = "/"
           method = GET
           headers = AuthHeaders
@@ -50,14 +50,14 @@ describe('generateMorphClient', () => {
           response = User[]
         }
 
-        action getById {
+        action GetById {
           path = "/:id/:name?"
           method = GET
           params = UserIdParams
           response = User
         }
 
-        action create {
+        action Create {
           path = "/"
           method = POST
           headers = AuthHeaders

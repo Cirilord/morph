@@ -15,6 +15,8 @@ export type DiagnosticCode =
   | 'duplicate_enum_value'
   | 'duplicate_resource'
   | 'duplicate_action'
+  | 'invalid_resource_name'
+  | 'invalid_action_name'
   | 'missing_resource_path'
   | 'missing_action_path'
   | 'missing_action_method'

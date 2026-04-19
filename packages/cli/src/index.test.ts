@@ -16,10 +16,10 @@ describe('runCli', () => {
         id Int
       }
 
-      resource users {
+      resource Users {
         path = "/users"
 
-        action list {
+        action List {
           path = "/"
           method = GET
           response = User[]
@@ -45,10 +45,10 @@ describe('runCli', () => {
         id Int
       }
 
-      resource users {
+      resource Users {
         path = "/users"
 
-        action list {
+        action List {
           path = "/"
           method = GET
           response = User[]
@@ -80,10 +80,10 @@ describe('runCli', () => {
           id Int
         }
 
-        resource users {
+        resource Users {
           path = "/users"
 
-          action list {
+          action List {
             path = "/"
             method = GET
             response = User[]
@@ -106,10 +106,10 @@ describe('runCli', () => {
         output = "./generated/client"
       }
 
-      resource users {
+      resource Users {
         path = "/users"
 
-        action list {
+        action List {
           path = "/"
           method = GET
           response = MissingUser[]
@@ -123,7 +123,7 @@ describe('runCli', () => {
     expect(exitCode).toBe(1);
     expect(io.stdoutOutput()).toBe('');
     expect(io.stderrOutput()).toContain(
-      'error unknown_type: Unknown type "MissingUser" used in action "users.list" response.'
+      'error unknown_type: Unknown type "MissingUser" used in action "Users.List" response.'
     );
   });
 
@@ -148,10 +148,10 @@ describe('runCli', () => {
         name String @map("usr_name")
       }
 
-      resource users {
+      resource Users {
         path = "/users"
 
-        action list {
+        action List {
           path = "/"
           method = GET
           response = User[]
@@ -185,10 +185,10 @@ describe('runCli', () => {
         id Int
       }
 
-      resource users {
+      resource Users {
         path = "/users"
 
-        action list {
+        action List {
           path = "/"
           method = GET
           response = User[]
@@ -227,10 +227,10 @@ describe('runCli', () => {
           id Int
         }
 
-        resource users {
+        resource Users {
           path = "/users"
 
-          action list {
+          action List {
             path = "/"
             method = GET
             response = User[]

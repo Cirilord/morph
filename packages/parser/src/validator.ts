@@ -11,6 +11,7 @@ import type { Diagnostic, DiagnosticCode } from './diagnostic.js';
 
 const scalarTypes = new Set(['String', 'Int', 'Float', 'Boolean', 'DateTime', 'Json']);
 const bodylessMethods = new Set(['GET', 'HEAD']);
+const pascalCaseNamePattern = /^[A-Z][A-Za-z0-9]*$/;
 
 export function validateMorphSchema(schema: ApiSchema): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
@@ -110,6 +111,12 @@ function validateResources(
     const resourcePath = [...parentPath, resource.name];
     const resourceHttpPath = joinPaths(parentHttpPath, resource.path);
 
+    if (!isPascalCaseName(resource.name)) {
+      diagnostics.push(
+        error('invalid_resource_name', `Resource "${resource.name}" must use PascalCase, for example "Users".`)
+      );
+    }
+
     if (resource.path === undefined) {
       diagnostics.push(
         error('missing_resource_path', `Resource "${formatResourcePath(resourcePath)}" is missing path.`)
@@ -145,6 +152,10 @@ function validateAction(
 ): void {
   const actionPath = `${formatResourcePath(resourcePath)}.${action.name}`;
   const httpPath = action.path === undefined ? resourceHttpPath : joinPaths(resourceHttpPath, action.path);
+
+  if (!isPascalCaseName(action.name)) {
+    diagnostics.push(error('invalid_action_name', `Action "${actionPath}" must use PascalCase, for example "List".`));
+  }
 
   if (action.path === undefined) {
     diagnostics.push(error('missing_action_path', `Action "${actionPath}" is missing path.`));
@@ -302,6 +313,10 @@ function validateTypeRef(typeRef: TypeRef, diagnostics: Diagnostic[], declaredTy
   if (!declaredTypes.has(typeRef.name)) {
     diagnostics.push(error('unknown_type', `Unknown type "${typeRef.name}" used in ${usage}.`));
   }
+}
+
+function isPascalCaseName(name: string): boolean {
+  return pascalCaseNamePattern.test(name);
 }
 
 function validateUniqueNames<T>(

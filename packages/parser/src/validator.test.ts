@@ -30,10 +30,10 @@ describe('validateMorphSchema', () => {
         slug String?
       }
 
-      resource users {
+      resource Users {
         path = "/users"
 
-        action getBySlug {
+        action GetBySlug {
           method = GET
           path = "/:id/:slug?"
           params = UserParams
@@ -47,8 +47,8 @@ describe('validateMorphSchema', () => {
 
   it('reports missing root declarations and required properties', () => {
     const schema = parseMorphSchema(`
-      resource users {
-        action list {
+      resource Users {
+        action List {
         }
       }
     `);
@@ -62,22 +62,22 @@ describe('validateMorphSchema', () => {
       {
         code: 'missing_resource_path',
         severity: 'error',
-        message: 'Resource "users" is missing path.',
+        message: 'Resource "Users" is missing path.',
       },
       {
         code: 'missing_action_path',
         severity: 'error',
-        message: 'Action "users.list" is missing path.',
+        message: 'Action "Users.List" is missing path.',
       },
       {
         code: 'missing_action_method',
         severity: 'error',
-        message: 'Action "users.list" is missing method.',
+        message: 'Action "Users.List" is missing method.',
       },
       {
         code: 'missing_action_response',
         severity: 'error',
-        message: 'Action "users.list" is missing response.',
+        message: 'Action "Users.List" is missing response.',
       },
     ]);
   });
@@ -106,26 +106,26 @@ describe('validateMorphSchema', () => {
         name String
       }
 
-      resource users {
+      resource Users {
         path = "/users"
 
-        action list {
+        action List {
           path = "/"
           method = GET
           response = User[]
         }
 
-        action list {
+        action List {
           path = "/"
           method = GET
           response = User[]
         }
 
-        resource posts {
+        resource Posts {
           path = "/posts"
         }
 
-        resource posts {
+        resource Posts {
           path = "/posts"
         }
       }
@@ -141,6 +141,41 @@ describe('validateMorphSchema', () => {
     ]);
   });
 
+  it('requires PascalCase resource and action names', () => {
+    const schema = parseMorphSchema(`
+      generator client {
+        output = "./generated/client"
+      }
+
+      type User {
+        id Int
+      }
+
+      resource users {
+        path = "/users"
+
+        action list {
+          path = "/"
+          method = GET
+          response = User[]
+        }
+      }
+    `);
+
+    expect(validateMorphSchema(schema)).toEqual([
+      {
+        code: 'invalid_resource_name',
+        severity: 'error',
+        message: 'Resource "users" must use PascalCase, for example "Users".',
+      },
+      {
+        code: 'invalid_action_name',
+        severity: 'error',
+        message: 'Action "users.list" must use PascalCase, for example "List".',
+      },
+    ]);
+  });
+
   it('reports unknown referenced types and bodyless method bodies', () => {
     const schema = parseMorphSchema(`
       generator client {
@@ -151,10 +186,10 @@ describe('validateMorphSchema', () => {
         id MissingId
       }
 
-      resource users {
+      resource Users {
         path = "/users"
 
-        action list {
+        action List {
           path = "/"
           method = GET
           query = MissingQuery
@@ -173,22 +208,22 @@ describe('validateMorphSchema', () => {
       {
         code: 'body_not_allowed',
         severity: 'error',
-        message: 'Action "users.list" uses body with GET.',
+        message: 'Action "Users.List" uses body with GET.',
       },
       {
         code: 'unknown_type',
         severity: 'error',
-        message: 'Unknown type "MissingQuery" used in action "users.list" query.',
+        message: 'Unknown type "MissingQuery" used in action "Users.List" query.',
       },
       {
         code: 'unknown_type',
         severity: 'error',
-        message: 'Unknown type "MissingBody" used in action "users.list" body.',
+        message: 'Unknown type "MissingBody" used in action "Users.List" body.',
       },
       {
         code: 'unknown_type',
         severity: 'error',
-        message: 'Unknown type "MissingResponse" used in action "users.list" response.',
+        message: 'Unknown type "MissingResponse" used in action "Users.List" response.',
       },
     ]);
   });
@@ -222,44 +257,44 @@ describe('validateMorphSchema', () => {
         name String
       }
 
-      resource users {
+      resource Users {
         path = "/users"
 
-        action missingParams {
+        action MissingParams {
           path = "/:id"
           method = GET
           response = User
         }
 
-        action missingField {
+        action MissingField {
           path = "/:id/:name"
           method = GET
           params = MissingNameParams
           response = User
         }
 
-        action unusedField {
+        action UnusedField {
           path = "/:id"
           method = GET
           params = ExtraNameParams
           response = User
         }
 
-        action optionalMismatch {
+        action OptionalMismatch {
           path = "/:id/:name"
           method = GET
           params = OptionalMismatchParams
           response = User
         }
 
-        action requiredMismatch {
+        action RequiredMismatch {
           path = "/:id/:name?"
           method = GET
           params = RequiredMismatchParams
           response = User
         }
 
-        action noPathParams {
+        action NoPathParams {
           path = "/"
           method = GET
           params = ExtraNameParams
@@ -272,35 +307,35 @@ describe('validateMorphSchema', () => {
       {
         code: 'missing_action_params',
         severity: 'error',
-        message: 'Action "users.missingParams" path "/users/:id" requires params.',
+        message: 'Action "Users.MissingParams" path "/users/:id" requires params.',
       },
       {
         code: 'path_param_missing_field',
         severity: 'error',
-        message: 'Path parameter "name" in action "users.missingField" is missing in params type "MissingNameParams".',
+        message: 'Path parameter "name" in action "Users.MissingField" is missing in params type "MissingNameParams".',
       },
       {
         code: 'path_param_unused_field',
         severity: 'error',
         message:
-          'Field "name" in params type "ExtraNameParams" is not used in action "users.unusedField" path "/users/:id".',
+          'Field "name" in params type "ExtraNameParams" is not used in action "Users.UnusedField" path "/users/:id".',
       },
       {
         code: 'path_param_optionality_mismatch',
         severity: 'error',
         message:
-          'Path parameter "name" in action "users.optionalMismatch" is required, but field "name" in params type "OptionalMismatchParams" is optional.',
+          'Path parameter "name" in action "Users.OptionalMismatch" is required, but field "name" in params type "OptionalMismatchParams" is optional.',
       },
       {
         code: 'path_param_optionality_mismatch',
         severity: 'error',
         message:
-          'Path parameter "name" in action "users.requiredMismatch" is optional, but field "name" in params type "RequiredMismatchParams" is required.',
+          'Path parameter "name" in action "Users.RequiredMismatch" is optional, but field "name" in params type "RequiredMismatchParams" is required.',
       },
       {
         code: 'path_param_unused_field',
         severity: 'error',
-        message: 'Action "users.noPathParams" defines params but path "/users" has no params.',
+        message: 'Action "Users.NoPathParams" defines params but path "/users" has no params.',
       },
     ]);
   });

@@ -30,10 +30,10 @@ describe('parseMorphSchema', () => {
         page Int? @map("page_num")
       }
 
-      resource users {
+      resource Users {
         path = "/users"
 
-        action list {
+        action List {
           path = "/"
           method = GET
           query = ListUsersQuery
@@ -70,13 +70,13 @@ describe('parseMorphSchema', () => {
     ]);
     expect(schema.resources[0]).toEqual({
       kind: 'resource',
-      name: 'users',
+      name: 'Users',
       path: '/users',
       resources: [],
       actions: [
         {
           kind: 'action',
-          name: 'list',
+          name: 'List',
           method: 'GET',
           path: '/',
           query: { name: 'ListUsersQuery', isArray: false, isOptional: false },
@@ -93,13 +93,13 @@ describe('parseMorphSchema', () => {
         BLOCKED
       }
 
-      resource users {
+      resource Users {
         path = "/users"
 
-        resource posts {
+        resource Posts {
           path = "/:userId/posts"
 
-          action list {
+          action List {
             path = "/"
             method = GET
             response = Post[]
@@ -115,7 +115,7 @@ describe('parseMorphSchema', () => {
     });
     expect(schema.resources[0]?.resources[0]).toMatchObject({
       kind: 'resource',
-      name: 'posts',
+      name: 'Posts',
       path: '/:userId/posts',
     });
   });

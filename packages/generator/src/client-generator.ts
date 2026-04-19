@@ -163,7 +163,7 @@ function generateResourceMember(
 
   return [
     '',
-    `  readonly ${resource.name} = {`,
+    `  readonly ${toClientMemberName(resource.name)} = {`,
     ...resource.actions.flatMap((action) => generateActionMember(action, path, objectTypeNames, 4)),
     ...resource.resources.flatMap((nestedResource) =>
       generateNestedResourceMember(nestedResource, path, objectTypeNames, 4)
@@ -182,7 +182,7 @@ function generateNestedResourceMember(
   const path = joinPaths(basePath, requirePath(resource.path, `resource "${resource.name}"`));
 
   return [
-    `${indent}${resource.name}: {`,
+    `${indent}${toClientMemberName(resource.name)}: {`,
     ...resource.actions.flatMap((action) => generateActionMember(action, path, objectTypeNames, indentSize + 2)),
     ...resource.resources.flatMap((nestedResource) =>
       generateNestedResourceMember(nestedResource, path, objectTypeNames, indentSize + 2)
@@ -218,7 +218,7 @@ function generateActionMember(
   const path = joinPaths(basePath, requirePath(action.path, `action "${action.name}"`));
 
   return [
-    `${indent}${action.name}: async (${generateActionParameter(action)}): Promise<${generateActionReturnType(action)}> => {`,
+    `${indent}${toClientMemberName(action.name)}: async (${generateActionParameter(action)}): Promise<${generateActionReturnType(action)}> => {`,
     `${bodyIndent}return this.#engine.request<${generateActionReturnType(action)}>({`,
     `${requestIndent}method: ${stringLiteral(action.method ?? 'GET')},`,
     `${requestIndent}path: ${stringLiteral(path)},`,
@@ -226,6 +226,10 @@ function generateActionMember(
     `${bodyIndent}});`,
     `${indent}},`,
   ];
+}
+
+function toClientMemberName(name: string): string {
+  return `${name.charAt(0).toLowerCase()}${name.slice(1)}`;
 }
 
 function requirePath(path: string | undefined, declaration: string): string {
