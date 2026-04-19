@@ -1,4 +1,4 @@
-import { mkdtemp, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -76,6 +76,47 @@ describe('runCli', () => {
     expect(exitCode).toBe(1);
     expect(io.stdoutOutput()).toBe('');
     expect(io.stderrOutput()).toContain('error cli_error:');
+  });
+
+  it('generates client files', async () => {
+    const schemaPath = await writeSchema(`
+      datasource api {
+        url = env("API_URL")
+      }
+
+      generator client {
+        output = "./generated/client"
+      }
+
+      type User {
+        id Int @map("usr_id")
+        name String @map("usr_name")
+      }
+
+      resource users {
+        path = "/users"
+
+        action list {
+          method = GET
+          response = User[]
+        }
+      }
+    `);
+    const io = createTestIO();
+
+    const exitCode = await runCli(['node', 'morph', 'generate', '--schema', schemaPath], io);
+    const generatedDirectory = join(schemaPath, '..', 'generated', 'client');
+
+    expect(exitCode).toBe(0);
+    expect(io.stdoutOutput()).toContain('Generated Morph client:');
+    expect(io.stderrOutput()).toBe('');
+    await expect(readFile(join(generatedDirectory, 'types.ts'), 'utf8')).resolves.toContain('export type User = {');
+    await expect(readFile(join(generatedDirectory, 'maps.ts'), 'utf8')).resolves.toContain(
+      'id: { externalName: "usr_id" }'
+    );
+    await expect(readFile(join(generatedDirectory, 'index.ts'), 'utf8')).resolves.toContain(
+      "export * from './types.js';"
+    );
   });
 });
 

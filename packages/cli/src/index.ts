@@ -1,6 +1,7 @@
-import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { generateMorphClient } from '@morph/generator';
 import { ParseError, parseMorphSchema, TokenizeError, validateMorphSchema } from '@morph/parser';
 import { cac } from 'cac';
 
@@ -11,6 +12,11 @@ type CliIO = {
 
 type ValidateOptions = {
   schema?: string;
+};
+
+type GenerateOptions = {
+  schema?: string;
+  output?: string;
 };
 
 const defaultSchemaPath = 'schema.morph';
@@ -26,6 +32,16 @@ export async function runCli(argv: string[], io: CliIO = process): Promise<numbe
     })
     .action(async (options: ValidateOptions) => {
       exitCode = await validateCommand(options, io);
+    });
+
+  cli
+    .command('generate', 'Generate a Morph client')
+    .option('--schema <path>', 'Path to the schema file', {
+      default: defaultSchemaPath,
+    })
+    .option('--output <path>', 'Override generator output path')
+    .action(async (options: GenerateOptions) => {
+      exitCode = await generateCommand(options, io);
     });
 
   cli.help();
@@ -47,9 +63,7 @@ async function validateCommand(options: ValidateOptions, io: CliIO): Promise<num
   const schemaPath = resolve(options.schema ?? defaultSchemaPath);
 
   try {
-    const source = await readFile(schemaPath, 'utf8');
-    const schema = parseMorphSchema(source);
-    const diagnostics = validateMorphSchema(schema);
+    const { diagnostics } = await readAndValidateSchema(schemaPath);
 
     if (diagnostics.length === 0) {
       io.stdout.write(`Schema is valid: ${schemaPath}\n`);
@@ -65,6 +79,58 @@ async function validateCommand(options: ValidateOptions, io: CliIO): Promise<num
     io.stderr.write(`${formatCliError(error)}\n`);
     return 1;
   }
+}
+
+async function generateCommand(options: GenerateOptions, io: CliIO): Promise<number> {
+  const schemaPath = resolve(options.schema ?? defaultSchemaPath);
+
+  try {
+    const { schema, diagnostics } = await readAndValidateSchema(schemaPath);
+
+    if (diagnostics.length > 0) {
+      for (const diagnostic of diagnostics) {
+        io.stderr.write(`${diagnostic.severity} ${diagnostic.code}: ${diagnostic.message}\n`);
+      }
+
+      return 1;
+    }
+
+    const outputPath = resolveOutputPath(schemaPath, options.output ?? schema.generator?.output);
+    const generatedFiles = generateMorphClient(schema);
+
+    await mkdir(outputPath, { recursive: true });
+
+    for (const file of generatedFiles) {
+      await writeFile(join(outputPath, file.path), file.content);
+    }
+
+    io.stdout.write(`Generated Morph client: ${outputPath}\n`);
+
+    return 0;
+  } catch (error) {
+    io.stderr.write(`${formatCliError(error)}\n`);
+    return 1;
+  }
+}
+
+async function readAndValidateSchema(schemaPath: string) {
+  const source = await readFile(schemaPath, 'utf8');
+  const schema = parseMorphSchema(source);
+  const diagnostics = validateMorphSchema(schema);
+
+  return { schema, diagnostics };
+}
+
+function resolveOutputPath(schemaPath: string, outputPath: string | undefined): string {
+  if (outputPath === undefined) {
+    throw new Error('Schema generator output is required.');
+  }
+
+  if (isAbsolute(outputPath)) {
+    return outputPath;
+  }
+
+  return resolve(dirname(schemaPath), outputPath);
 }
 
 function formatCliError(error: unknown): string {
