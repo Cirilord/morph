@@ -6,7 +6,16 @@
     "useIgnoreFile": true
   },
   "files": {
-    "includes": ["**", "!dist", "!**/dist", "!node_modules", "!**/node_modules", "!.turbo", "!**/.turbo"]
+    "includes": [
+      "**",
+      "!dist",
+      "!**/dist",
+      "!node_modules",
+      "!**/node_modules",
+      "!.turbo",
+      "!**/.turbo",
+      "!examples/nextjs/next-env.d.ts"
+    ]
   },
   "formatter": {
     "enabled": true,

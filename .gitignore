@@ -27,6 +27,7 @@ out/
 build
 dist
 examples/**/generated/
+examples/**/src/generated/
 
 
 # Debug
@@ -37,3 +38,4 @@ yarn-error.log*
 # Misc
 .DS_Store
 *.pem
+*.tsbuildinfo

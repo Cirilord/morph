@@ -1,0 +1,72 @@
+type Geo {
+  lat String
+  lng String
+}
+
+type Address {
+  street  String
+  suite   String
+  city    String
+  zipcode String
+  geo     Geo
+}
+
+type Company {
+  name        String
+  catchPhrase String
+  bs          String
+}
+
+type User {
+  id       Int
+  name     String
+  username String
+  email    String
+  address  Address
+  phone    String
+  website  String
+  company  Company
+}
+
+type UserIdParams {
+  id Int
+}
+
+type CreateUserBody {
+  name     String
+  username String
+  email    String
+}
+
+type CreatedUser {
+  id       Int
+  name     String
+  username String
+  email    String
+}
+
+generator client {
+  output = "../src/generated/morph"
+}
+
+resource users {
+  path = "/users"
+
+  action list {
+    method   = GET
+    response = User[]
+  }
+
+  action getById {
+    method   = GET
+    path     = "/:id"
+    params   = UserIdParams
+    response = User
+  }
+
+  action create {
+    method   = POST
+    body     = CreateUserBody
+    response = CreatedUser
+  }
+}

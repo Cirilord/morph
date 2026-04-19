@@ -1,0 +1,25 @@
+{
+  "name": "@morph/example-nextjs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "yarn generate && next build --webpack",
+    "dev": "yarn generate && next dev --webpack",
+    "generate": "node ../../packages/cli/dist/index.js generate",
+    "start": "next start",
+    "check-types": "yarn generate && next typegen && tsc --noEmit"
+  },
+  "dependencies": {
+    "@morph/config": "file:../../packages/config",
+    "@morph/runtime": "file:../../packages/runtime",
+    "next": "16.2.4",
+    "react": "19.2.5",
+    "react-dom": "19.2.5"
+  },
+  "devDependencies": {
+    "@types/node": "25.6.0",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "typescript": "5.9.2"
+  }
+}
