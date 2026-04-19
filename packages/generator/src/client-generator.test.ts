@@ -30,13 +30,41 @@ describe('generateMorphClient', () => {
         page Int? @map("page_num")
       }
 
+      type UserIdParams {
+        id Int
+        name String?
+      }
+
+      type AuthHeaders {
+        token String @map("authorization")
+      }
+
+      type CreateUserBody {
+        name String @map("usr_name")
+      }
+
       resource users {
         path = "/users"
 
         action list {
           method = GET
+          headers = AuthHeaders
           query = ListUsersQuery
           response = User[]
+        }
+
+        action getById {
+          method = GET
+          path = "/:id/:name?"
+          params = UserIdParams
+          response = User
+        }
+
+        action create {
+          method = POST
+          headers = AuthHeaders
+          body = CreateUserBody
+          response = User
         }
       }
     `);
@@ -63,6 +91,19 @@ describe('generateMorphClient', () => {
           '  page?: number;',
           '};',
           '',
+          'export type UserIdParams = {',
+          '  id: number;',
+          '  name?: string;',
+          '};',
+          '',
+          'export type AuthHeaders = {',
+          '  token: string;',
+          '};',
+          '',
+          'export type CreateUserBody = {',
+          '  name: string;',
+          '};',
+          '',
         ].join('\n'),
       },
       {
@@ -78,10 +119,21 @@ describe('generateMorphClient', () => {
           '  search: { externalName: "q" },',
           '  page: { externalName: "page_num" },',
           '} satisfies MapperObject;',
+          'export const UserIdParamsMap = {',
+          '} satisfies MapperObject;',
+          'export const AuthHeadersMap = {',
+          '  token: { externalName: "authorization" },',
+          '} satisfies MapperObject;',
+          'export const CreateUserBodyMap = {',
+          '  name: { externalName: "usr_name" },',
+          '} satisfies MapperObject;',
           '',
           'export const maps = {',
           '  User: UserMap,',
           '  ListUsersQuery: ListUsersQueryMap,',
+          '  UserIdParams: UserIdParamsMap,',
+          '  AuthHeaders: AuthHeadersMap,',
+          '  CreateUserBody: CreateUserBodyMap,',
           '} as const;',
           '',
         ].join('\n'),
@@ -89,9 +141,9 @@ describe('generateMorphClient', () => {
       {
         path: 'client.ts',
         content: [
-          "import type { ListUsersQuery, MorphClientOptions, User } from './types.js';",
+          "import type { AuthHeaders, CreateUserBody, ListUsersQuery, MorphClientOptions, User, UserIdParams } from './types.js';",
           "import { MorphEngine } from '@morph/runtime';",
-          "import { ListUsersQueryMap, UserMap } from './maps.js';",
+          "import { AuthHeadersMap, CreateUserBodyMap, ListUsersQueryMap, UserMap } from './maps.js';",
           '',
           'export class MorphClient {',
           '  readonly #engine: MorphEngine;',
@@ -101,12 +153,33 @@ describe('generateMorphClient', () => {
           '  }',
           '',
           '  readonly users = {',
-          '    list: async (options?: { query?: ListUsersQuery }): Promise<User[]> => {',
+          '    list: async (options?: { query?: ListUsersQuery; headers?: AuthHeaders }): Promise<User[]> => {',
           '      return this.#engine.request<User[]>({',
           '        method: "GET",',
           '        path: "/users",',
           '        query: options?.query === undefined ? undefined : (options.query as Record<string, unknown>),',
           '        queryMapper: ListUsersQueryMap,',
+          '        headers: options?.headers === undefined ? undefined : (options.headers as Record<string, unknown>),',
+          '        headersMapper: AuthHeadersMap,',
+          '        responseMapper: UserMap,',
+          '      });',
+          '    },',
+          '    getById: async (options: { params: UserIdParams }): Promise<User> => {',
+          '      return this.#engine.request<User>({',
+          '        method: "GET",',
+          '        path: "/users/:id/:name?",',
+          '        params: options.params as Record<string, unknown>,',
+          '        responseMapper: UserMap,',
+          '      });',
+          '    },',
+          '    create: async (options: { body: CreateUserBody; headers?: AuthHeaders }): Promise<User> => {',
+          '      return this.#engine.request<User>({',
+          '        method: "POST",',
+          '        path: "/users",',
+          '        body: options.body,',
+          '        bodyMapper: CreateUserBodyMap,',
+          '        headers: options?.headers === undefined ? undefined : (options.headers as Record<string, unknown>),',
+          '        headersMapper: AuthHeadersMap,',
           '        responseMapper: UserMap,',
           '      });',
           '    },',
@@ -120,7 +193,7 @@ describe('generateMorphClient', () => {
         content: [
           "export { MorphClient } from './client.js';",
           "export * from './types.js';",
-          "export { maps, UserMap, ListUsersQueryMap } from './maps.js';",
+          "export { maps, UserMap, ListUsersQueryMap, UserIdParamsMap, AuthHeadersMap, CreateUserBodyMap } from './maps.js';",
           '',
         ].join('\n'),
       },

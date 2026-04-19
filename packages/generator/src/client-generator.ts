@@ -121,7 +121,7 @@ function collectResourceMapImports(
 }
 
 function collectActionMapImports(action: ActionDeclaration, objectTypeNames: Set<string>, imports: Set<string>): void {
-  for (const typeRef of [action.params, action.query, action.body, action.headers, action.response]) {
+  for (const typeRef of [action.query, action.body, action.headers, action.response]) {
     if (typeRef !== undefined && objectTypeNames.has(typeRef.name)) {
       imports.add(`${typeRef.name}Map`);
     }
@@ -237,10 +237,6 @@ function generateActionRequestProperties(
 
   if (action.params !== undefined) {
     properties.push(`${indent}params: options.params as Record<string, unknown>,`);
-
-    if (objectTypeNames.has(action.params.name)) {
-      properties.push(`${indent}paramsMapper: ${action.params.name}Map,`);
-    }
   }
 
   if (action.query !== undefined) {

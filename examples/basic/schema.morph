@@ -17,12 +17,42 @@ type ListUsersQuery {
   page   Int?    @map("page_num")
 }
 
+type UserIdParams {
+  id   Int
+  name String?
+}
+
+type AuthHeaders {
+  token String @map("authorization")
+}
+
+type CreateUserBody {
+  name  String @map("usr_name")
+  email String @map("usr_mail")
+}
+
 resource users {
   path = "/users"
 
   action list {
     method   = GET
+    headers  = AuthHeaders
     query    = ListUsersQuery
     response = User[]
+  }
+
+  action getById {
+    method   = GET
+    path     = "/:id/:name?"
+    params   = UserIdParams
+    headers  = AuthHeaders
+    response = User
+  }
+
+  action create {
+    method   = POST
+    headers  = AuthHeaders
+    body     = CreateUserBody
+    response = User
   }
 }

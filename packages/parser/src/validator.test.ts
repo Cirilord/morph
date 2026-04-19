@@ -29,13 +29,19 @@ describe('validateMorphSchema', () => {
         search String?
       }
 
+      type UserParams {
+        id Int
+        slug String?
+      }
+
       resource users {
         path = "/users"
 
-        action list {
+        action getBySlug {
           method = GET
-          query = ListUsersQuery
-          response = User[]
+          path = "/:id/:slug?"
+          params = UserParams
+          response = User
         }
       }
     `);
@@ -195,6 +201,121 @@ describe('validateMorphSchema', () => {
         code: 'unknown_type',
         severity: 'error',
         message: 'Unknown type "MissingResponse" used in action "users.list" response.',
+      },
+    ]);
+  });
+
+  it('validates action path params against params type fields', () => {
+    const schema = parseMorphSchema(`
+      datasource api {
+        url = env("API_URL")
+      }
+
+      generator client {
+        output = "./generated/client"
+      }
+
+      type User {
+        id Int
+      }
+
+      type MissingNameParams {
+        id Int
+      }
+
+      type ExtraNameParams {
+        id Int
+        name String
+      }
+
+      type OptionalMismatchParams {
+        id Int
+        name String?
+      }
+
+      type RequiredMismatchParams {
+        id Int
+        name String
+      }
+
+      resource users {
+        path = "/users"
+
+        action missingParams {
+          method = GET
+          path = "/:id"
+          response = User
+        }
+
+        action missingField {
+          method = GET
+          path = "/:id/:name"
+          params = MissingNameParams
+          response = User
+        }
+
+        action unusedField {
+          method = GET
+          path = "/:id"
+          params = ExtraNameParams
+          response = User
+        }
+
+        action optionalMismatch {
+          method = GET
+          path = "/:id/:name"
+          params = OptionalMismatchParams
+          response = User
+        }
+
+        action requiredMismatch {
+          method = GET
+          path = "/:id/:name?"
+          params = RequiredMismatchParams
+          response = User
+        }
+
+        action noPathParams {
+          method = GET
+          params = ExtraNameParams
+          response = User
+        }
+      }
+    `);
+
+    expect(validateMorphSchema(schema)).toEqual([
+      {
+        code: 'missing_action_params',
+        severity: 'error',
+        message: 'Action "users.missingParams" path "/users/:id" requires params.',
+      },
+      {
+        code: 'path_param_missing_field',
+        severity: 'error',
+        message: 'Path parameter "name" in action "users.missingField" is missing in params type "MissingNameParams".',
+      },
+      {
+        code: 'path_param_unused_field',
+        severity: 'error',
+        message:
+          'Field "name" in params type "ExtraNameParams" is not used in action "users.unusedField" path "/users/:id".',
+      },
+      {
+        code: 'path_param_optionality_mismatch',
+        severity: 'error',
+        message:
+          'Path parameter "name" in action "users.optionalMismatch" is required, but field "name" in params type "OptionalMismatchParams" is optional.',
+      },
+      {
+        code: 'path_param_optionality_mismatch',
+        severity: 'error',
+        message:
+          'Path parameter "name" in action "users.requiredMismatch" is optional, but field "name" in params type "RequiredMismatchParams" is required.',
+      },
+      {
+        code: 'path_param_unused_field',
+        severity: 'error',
+        message: 'Action "users.noPathParams" defines params but path "/users" has no params.',
       },
     ]);
   });

@@ -48,10 +48,6 @@ describe('MorphEngine', () => {
     const headersMapper: MapperObject = {
       requestId: { externalName: 'x-request-id' },
     };
-    const paramsMapper: MapperObject = {
-      id: { externalName: 'usr_id' },
-    };
-
     const fetcher = async (url: URL | RequestInfo, init?: RequestInit): Promise<Response> => {
       const headers = init?.headers;
 
@@ -72,7 +68,7 @@ describe('MorphEngine', () => {
     await expect(
       engine.request({
         method: 'POST',
-        path: '/users/:usr_id',
+        path: '/users/:id',
         body: {
           name: 'Ana',
         },
@@ -84,7 +80,55 @@ describe('MorphEngine', () => {
         params: {
           id: 123,
         },
-        paramsMapper,
+        responseMapper: userMapper,
+      })
+    ).resolves.toEqual({ id: 123, name: 'Ana' });
+  });
+
+  it('omits optional path parameter segments when values are missing', async () => {
+    const fetcher = async (url: URL | RequestInfo): Promise<Response> => {
+      expect(String(url)).toBe('https://api.example.com/users/123');
+
+      return Response.json({ usr_id: 123, usr_name: 'Ana' });
+    };
+
+    const engine = new MorphEngine({
+      baseUrl: 'https://api.example.com',
+      fetcher,
+    });
+
+    await expect(
+      engine.request({
+        method: 'GET',
+        path: '/users/:id/:name?',
+        params: {
+          id: 123,
+        },
+        responseMapper: userMapper,
+      })
+    ).resolves.toEqual({ id: 123, name: 'Ana' });
+  });
+
+  it('keeps optional path parameter segments when values are present', async () => {
+    const fetcher = async (url: URL | RequestInfo): Promise<Response> => {
+      expect(String(url)).toBe('https://api.example.com/users/123/ana');
+
+      return Response.json({ usr_id: 123, usr_name: 'Ana' });
+    };
+
+    const engine = new MorphEngine({
+      baseUrl: 'https://api.example.com',
+      fetcher,
+    });
+
+    await expect(
+      engine.request({
+        method: 'GET',
+        path: '/users/:id/:name?',
+        params: {
+          id: 123,
+          name: 'ana',
+        },
         responseMapper: userMapper,
       })
     ).resolves.toEqual({ id: 123, name: 'Ana' });

@@ -2,6 +2,7 @@ import type {
   ActionDeclaration,
   ApiSchema,
   EnumDeclaration,
+  FieldDeclaration,
   ResourceDeclaration,
   TypeDeclaration,
   TypeRef,
@@ -14,12 +15,13 @@ const bodylessMethods = new Set(['GET', 'HEAD']);
 export function validateMorphSchema(schema: ApiSchema): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
   const declaredTypes = collectDeclaredTypes(schema, diagnostics);
+  const typeDeclarations = new Map(schema.types.map((type) => [type.name, type]));
 
   validateDatasource(schema, diagnostics);
   validateGenerator(schema, diagnostics);
   validateTypes(schema.types, diagnostics, declaredTypes);
   validateEnums(schema.enums, diagnostics);
-  validateResources(schema.resources, diagnostics, declaredTypes, []);
+  validateResources(schema.resources, diagnostics, declaredTypes, typeDeclarations, [], '');
 
   return diagnostics;
 }
@@ -104,7 +106,9 @@ function validateResources(
   resources: ResourceDeclaration[],
   diagnostics: Diagnostic[],
   declaredTypes: Set<string>,
-  parentPath: string[]
+  typeDeclarations: Map<string, TypeDeclaration>,
+  parentPath: string[],
+  parentHttpPath: string
 ): void {
   validateUniqueNames(
     resources,
@@ -116,6 +120,7 @@ function validateResources(
 
   for (const resource of resources) {
     const resourcePath = [...parentPath, resource.name];
+    const resourceHttpPath = joinPaths(parentHttpPath, resource.path);
 
     if (resource.path === undefined) {
       diagnostics.push(
@@ -135,10 +140,10 @@ function validateResources(
     );
 
     for (const action of resource.actions) {
-      validateAction(action, diagnostics, declaredTypes, resourcePath);
+      validateAction(action, diagnostics, declaredTypes, typeDeclarations, resourcePath, resourceHttpPath);
     }
 
-    validateResources(resource.resources, diagnostics, declaredTypes, resourcePath);
+    validateResources(resource.resources, diagnostics, declaredTypes, typeDeclarations, resourcePath, resourceHttpPath);
   }
 }
 
@@ -146,9 +151,12 @@ function validateAction(
   action: ActionDeclaration,
   diagnostics: Diagnostic[],
   declaredTypes: Set<string>,
-  resourcePath: string[]
+  typeDeclarations: Map<string, TypeDeclaration>,
+  resourcePath: string[],
+  resourceHttpPath: string
 ): void {
   const actionPath = `${formatResourcePath(resourcePath)}.${action.name}`;
+  const httpPath = joinPaths(resourceHttpPath, action.path);
 
   if (action.method === undefined) {
     diagnostics.push(error('missing_action_method', `Action "${actionPath}" is missing method.`));
@@ -167,6 +175,120 @@ function validateAction(
   validateOptionalTypeRef(action.body, diagnostics, declaredTypes, `action "${actionPath}" body`);
   validateOptionalTypeRef(action.headers, diagnostics, declaredTypes, `action "${actionPath}" headers`);
   validateOptionalTypeRef(action.response, diagnostics, declaredTypes, `action "${actionPath}" response`);
+  validatePathParams(action, diagnostics, typeDeclarations, actionPath, httpPath);
+}
+
+function validatePathParams(
+  action: ActionDeclaration,
+  diagnostics: Diagnostic[],
+  typeDeclarations: Map<string, TypeDeclaration>,
+  actionPath: string,
+  httpPath: string
+): void {
+  const pathParams = extractPathParams(httpPath);
+
+  if (pathParams.length === 0) {
+    if (action.params !== undefined) {
+      diagnostics.push(
+        error('path_param_unused_field', `Action "${actionPath}" defines params but path "${httpPath}" has no params.`)
+      );
+    }
+
+    return;
+  }
+
+  if (action.params === undefined) {
+    diagnostics.push(error('missing_action_params', `Action "${actionPath}" path "${httpPath}" requires params.`));
+    return;
+  }
+
+  const paramsType = typeDeclarations.get(action.params.name);
+
+  if (paramsType === undefined) {
+    return;
+  }
+
+  const pathParamsByName = new Map(pathParams.map((pathParam) => [pathParam.name, pathParam]));
+  const fieldsByName = new Map(paramsType.fields.map((field) => [field.name, field]));
+
+  for (const pathParam of pathParams) {
+    const field = fieldsByName.get(pathParam.name);
+
+    if (field === undefined) {
+      diagnostics.push(
+        error(
+          'path_param_missing_field',
+          `Path parameter "${pathParam.name}" in action "${actionPath}" is missing in params type "${paramsType.name}".`
+        )
+      );
+      continue;
+    }
+
+    validatePathParamOptionality(pathParam, field, diagnostics, actionPath, paramsType.name);
+  }
+
+  for (const field of paramsType.fields) {
+    if (!pathParamsByName.has(field.name)) {
+      diagnostics.push(
+        error(
+          'path_param_unused_field',
+          `Field "${field.name}" in params type "${paramsType.name}" is not used in action "${actionPath}" path "${httpPath}".`
+        )
+      );
+    }
+  }
+}
+
+type PathParam = {
+  name: string;
+  isOptional: boolean;
+};
+
+function extractPathParams(path: string): PathParam[] {
+  const params: PathParam[] = [];
+  const pattern = /:([A-Za-z0-9_]+)(\?)?/g;
+
+  for (const match of path.matchAll(pattern)) {
+    const name = match[1];
+
+    if (name !== undefined) {
+      params.push({
+        name,
+        isOptional: match[2] === '?',
+      });
+    }
+  }
+
+  return params;
+}
+
+function validatePathParamOptionality(
+  pathParam: PathParam,
+  field: FieldDeclaration,
+  diagnostics: Diagnostic[],
+  actionPath: string,
+  paramsTypeName: string
+): void {
+  if (pathParam.isOptional === field.type.isOptional) {
+    return;
+  }
+
+  if (pathParam.isOptional) {
+    diagnostics.push(
+      error(
+        'path_param_optionality_mismatch',
+        `Path parameter "${pathParam.name}" in action "${actionPath}" is optional, but field "${field.name}" in params type "${paramsTypeName}" is required.`
+      )
+    );
+    return;
+  }
+
+  diagnostics.push(
+    error(
+      'path_param_optionality_mismatch',
+      `Path parameter "${pathParam.name}" in action "${actionPath}" is required, but field "${field.name}" in params type "${paramsTypeName}" is optional.`
+    )
+  );
 }
 
 function validateOptionalTypeRef(
@@ -218,6 +340,21 @@ function formatResourceScope(resourcePath: string[]): string {
 
 function formatResourcePath(resourcePath: string[]): string {
   return resourcePath.join('.');
+}
+
+function joinPaths(basePath: string, path: string | undefined): string {
+  if (path === undefined || path.length === 0) {
+    return basePath;
+  }
+
+  if (basePath.length === 0) {
+    return path.startsWith('/') ? path : `/${path}`;
+  }
+
+  const normalizedBasePath = basePath.endsWith('/') ? basePath.slice(0, -1) : basePath;
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
+
+  return `${normalizedBasePath}${normalizedPath}`;
 }
 
 function error(code: DiagnosticCode, message: string): Diagnostic {

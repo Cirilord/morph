@@ -14,7 +14,6 @@ export type MorphEngineRequest = {
   headers?: Record<string, unknown> | undefined;
   headersMapper?: MapperObject | undefined;
   params?: Record<string, unknown> | undefined;
-  paramsMapper?: MapperObject | undefined;
   query?: Record<string, unknown> | undefined;
   queryMapper?: MapperObject | undefined;
   responseMapper?: MapperObject | undefined;
@@ -30,11 +29,10 @@ export class MorphEngine {
   }
 
   async request<T>(request: MorphEngineRequest): Promise<T> {
-    const params = this.#mapRecord(request.params, request.paramsMapper);
     const query = this.#mapRecord(request.query, request.queryMapper);
     const headers = this.#mapRecord(request.headers, request.headersMapper);
     const body = this.#mapValue(request.body, request.bodyMapper);
-    const url = this.#buildUrl(this.#buildPath(request.path, params), query);
+    const url = this.#buildUrl(this.#buildPath(request.path, request.params), query);
     const hasBody = body !== undefined;
     const init: RequestInit = {
       headers: this.#buildHeaders(headers, hasBody),
@@ -91,15 +89,36 @@ export class MorphEngine {
       return path;
     }
 
-    return path.replace(/:([A-Za-z0-9_]+)/g, (_match: string, key: string) => {
-      const value = params[key];
+    return path
+      .split('/')
+      .flatMap((segment) => this.#buildPathSegment(segment, params))
+      .join('/');
+  }
+
+  #buildPathSegment(segment: string, params: Record<string, unknown>): string[] {
+    const optionalSegment = /^:([A-Za-z0-9_]+)\?$/.exec(segment);
+
+    if (optionalSegment?.[1] !== undefined) {
+      const value = params[optionalSegment[1]];
 
       if (value === undefined) {
-        throw new Error(`Missing path parameter '${key}'.`);
+        return [];
       }
 
-      return encodeURIComponent(String(value));
-    });
+      return [encodeURIComponent(String(value))];
+    }
+
+    return [
+      segment.replace(/:([A-Za-z0-9_]+)/g, (_match: string, key: string) => {
+        const value = params[key];
+
+        if (value === undefined) {
+          throw new Error(`Missing path parameter '${key}'.`);
+        }
+
+        return encodeURIComponent(String(value));
+      }),
+    ];
   }
 
   #buildUrl(path: string, query: Record<string, unknown> | undefined): URL {

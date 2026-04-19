@@ -20,5 +20,9 @@ export type DiagnosticCode =
   | 'missing_resource_path'
   | 'missing_action_method'
   | 'missing_action_response'
+  | 'missing_action_params'
+  | 'path_param_missing_field'
+  | 'path_param_optionality_mismatch'
+  | 'path_param_unused_field'
   | 'unknown_type'
   | 'body_not_allowed';
