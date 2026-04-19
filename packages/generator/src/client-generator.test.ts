@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { generateMorphClient } from './client-generator.js';
 
 describe('generateMorphClient', () => {
-  it('generates types, maps, and index files', () => {
+  it('generates types, maps, client, and index files', () => {
     const schema = parseMorphSchema(`
       datasource api {
         url = env("API_URL")
@@ -29,12 +29,26 @@ describe('generateMorphClient', () => {
         search String? @map("q")
         page Int? @map("page_num")
       }
+
+      resource users {
+        path = "/users"
+
+        action list {
+          method = GET
+          query = ListUsersQuery
+          response = User[]
+        }
+      }
     `);
 
     expect(generateMorphClient(schema)).toEqual([
       {
         path: 'types.ts',
         content: [
+          'export type MorphClientOptions = {',
+          '  baseUrl: string;',
+          '};',
+          '',
           'export type UserStatus = "ACTIVE" | "BLOCKED";',
           '',
           'export type User = {',
@@ -72,8 +86,30 @@ describe('generateMorphClient', () => {
         ].join('\n'),
       },
       {
+        path: 'client.ts',
+        content: [
+          "import type { MorphClientOptions } from './types.js';",
+          '',
+          'export class MorphClient {',
+          '  readonly #baseUrl: string;',
+          '',
+          '  constructor(options: MorphClientOptions) {',
+          '    this.#baseUrl = options.baseUrl;',
+          '  }',
+          '',
+          '  readonly users = {',
+          '    list: async () => {',
+          "      throw new Error('Morph client requests are not implemented yet.');",
+          '    },',
+          '  };',
+          '}',
+          '',
+        ].join('\n'),
+      },
+      {
         path: 'index.ts',
         content: [
+          "export { MorphClient } from './client.js';",
           "export * from './types.js';",
           "export { maps, UserMap, ListUsersQueryMap } from './maps.js';",
           '',

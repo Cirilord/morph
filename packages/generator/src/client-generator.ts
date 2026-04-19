@@ -1,4 +1,12 @@
-import type { ApiSchema, EnumDeclaration, FieldDeclaration, TypeDeclaration, TypeRef } from '@morph/parser';
+import type {
+  ActionDeclaration,
+  ApiSchema,
+  EnumDeclaration,
+  FieldDeclaration,
+  ResourceDeclaration,
+  TypeDeclaration,
+  TypeRef,
+} from '@morph/parser';
 
 export type GeneratedFile = {
   path: string;
@@ -25,16 +33,62 @@ export function generateMorphClient(schema: ApiSchema): GeneratedFile[] {
       content: generateMaps(schema.types),
     },
     {
+      path: 'client.ts',
+      content: generateClient(schema),
+    },
+    {
       path: 'index.ts',
       content: generateIndex(schema.types),
     },
   ];
 }
 
+function generateClient(schema: ApiSchema): string {
+  return [
+    "import type { MorphClientOptions } from './types.js';",
+    '',
+    'export class MorphClient {',
+    '  readonly #baseUrl: string;',
+    '',
+    '  constructor(options: MorphClientOptions) {',
+    '    this.#baseUrl = options.baseUrl;',
+    '  }',
+    ...schema.resources.flatMap(generateResourceMember),
+    '}',
+    '',
+  ].join('\n');
+}
+
+function generateResourceMember(resource: ResourceDeclaration): string[] {
+  return [
+    '',
+    `  readonly ${resource.name} = {`,
+    ...resource.actions.flatMap(generateActionMember),
+    ...resource.resources.flatMap(generateNestedResourceMember),
+    '  };',
+  ];
+}
+
+function generateNestedResourceMember(resource: ResourceDeclaration): string[] {
+  return [`    ${resource.name}: {`, ...resource.actions.flatMap(generateActionMember), '    },'];
+}
+
+function generateActionMember(action: ActionDeclaration): string[] {
+  return [
+    `    ${action.name}: async () => {`,
+    "      throw new Error('Morph client requests are not implemented yet.');",
+    '    },',
+  ];
+}
+
 function generateTypes(schema: ApiSchema): string {
-  const chunks = [...schema.enums.map(generateEnum), ...schema.types.map(generateType)];
+  const chunks = [generateClientOptions(), ...schema.enums.map(generateEnum), ...schema.types.map(generateType)];
 
   return `${chunks.join('\n\n')}\n`;
+}
+
+function generateClientOptions(): string {
+  return ['export type MorphClientOptions = {', '  baseUrl: string;', '};'].join('\n');
 }
 
 function generateEnum(enumDeclaration: EnumDeclaration): string {
@@ -116,6 +170,7 @@ function generateIndex(types: TypeDeclaration[]): string {
   const mapExports = types.map((type) => `${type.name}Map`).join(', ');
 
   return [
+    `export { MorphClient } from './client.js';`,
     `export * from './types.js';`,
     `export { maps${mapExports.length > 0 ? `, ${mapExports}` : ''} } from './maps.js';`,
     '',
