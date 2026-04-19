@@ -16,6 +16,7 @@ export type DiagnosticCode =
   | 'duplicate_resource'
   | 'duplicate_action'
   | 'missing_resource_path'
+  | 'missing_action_path'
   | 'missing_action_method'
   | 'missing_action_response'
   | 'missing_action_params'

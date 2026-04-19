@@ -34,6 +34,7 @@ describe('parseMorphSchema', () => {
         path = "/users"
 
         action list {
+          path = "/"
           method = GET
           query = ListUsersQuery
           response = User[]
@@ -77,6 +78,7 @@ describe('parseMorphSchema', () => {
           kind: 'action',
           name: 'list',
           method: 'GET',
+          path: '/',
           query: { name: 'ListUsersQuery', isArray: false, isOptional: false },
           response: { name: 'User', isArray: true, isOptional: false },
         },
@@ -98,6 +100,7 @@ describe('parseMorphSchema', () => {
           path = "/:userId/posts"
 
           action list {
+            path = "/"
             method = GET
             response = Post[]
           }

@@ -31,6 +31,7 @@ resource users {
   path = "/users"
 
   action list {
+    path = "/"
     method   = GET
     headers  = AuthHeaders
     query    = ListUsersQuery
@@ -38,14 +39,15 @@ resource users {
   }
 
   action getById {
-    method   = GET
     path     = "/:id/:name?"
+    method   = GET
     params   = UserIdParams
     headers  = AuthHeaders
     response = User
   }
 
   action create {
+    path = "/"
     method   = POST
     headers  = AuthHeaders
     body     = CreateUserBody

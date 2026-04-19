@@ -1,3 +1,7 @@
+generator client {
+  output = "../src/generated/morph"
+}
+
 type Geo {
   lat String
   lng String
@@ -45,26 +49,24 @@ type CreatedUser {
   email    String
 }
 
-generator client {
-  output = "../src/generated/morph"
-}
-
 resource users {
   path = "/users"
 
   action list {
+    path = "/"
     method   = GET
     response = User[]
   }
 
   action getById {
-    method   = GET
     path     = "/:id"
+    method   = GET
     params   = UserIdParams
     response = User
   }
 
   action create {
+    path = "/"
     method   = POST
     body     = CreateUserBody
     response = CreatedUser

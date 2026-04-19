@@ -144,7 +144,11 @@ function validateAction(
   resourceHttpPath: string
 ): void {
   const actionPath = `${formatResourcePath(resourcePath)}.${action.name}`;
-  const httpPath = joinPaths(resourceHttpPath, action.path);
+  const httpPath = action.path === undefined ? resourceHttpPath : joinPaths(resourceHttpPath, action.path);
+
+  if (action.path === undefined) {
+    diagnostics.push(error('missing_action_path', `Action "${actionPath}" is missing path.`));
+  }
 
   if (action.method === undefined) {
     diagnostics.push(error('missing_action_method', `Action "${actionPath}" is missing method.`));
@@ -163,7 +167,9 @@ function validateAction(
   validateOptionalTypeRef(action.body, diagnostics, declaredTypes, `action "${actionPath}" body`);
   validateOptionalTypeRef(action.headers, diagnostics, declaredTypes, `action "${actionPath}" headers`);
   validateOptionalTypeRef(action.response, diagnostics, declaredTypes, `action "${actionPath}" response`);
-  validatePathParams(action, diagnostics, typeDeclarations, actionPath, httpPath);
+  if (action.path !== undefined) {
+    validatePathParams(action, diagnostics, typeDeclarations, actionPath, httpPath);
+  }
 }
 
 function validatePathParams(
@@ -331,7 +337,7 @@ function formatResourcePath(resourcePath: string[]): string {
 }
 
 function joinPaths(basePath: string, path: string | undefined): string {
-  if (path === undefined || path.length === 0) {
+  if (path === undefined || path.length === 0 || path === '/') {
     return basePath;
   }
 

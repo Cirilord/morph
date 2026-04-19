@@ -20,6 +20,7 @@ describe('runCli', () => {
         path = "/users"
 
         action list {
+          path = "/"
           method = GET
           response = User[]
         }
@@ -48,6 +49,7 @@ describe('runCli', () => {
         path = "/users"
 
         action list {
+          path = "/"
           method = GET
           response = User[]
         }
@@ -82,6 +84,7 @@ describe('runCli', () => {
           path = "/users"
 
           action list {
+            path = "/"
             method = GET
             response = User[]
           }
@@ -107,6 +110,7 @@ describe('runCli', () => {
         path = "/users"
 
         action list {
+          path = "/"
           method = GET
           response = MissingUser[]
         }
@@ -148,6 +152,7 @@ describe('runCli', () => {
         path = "/users"
 
         action list {
+          path = "/"
           method = GET
           response = User[]
         }
@@ -184,6 +189,7 @@ describe('runCli', () => {
         path = "/users"
 
         action list {
+          path = "/"
           method = GET
           response = User[]
         }
@@ -225,6 +231,7 @@ describe('runCli', () => {
           path = "/users"
 
           action list {
+            path = "/"
             method = GET
             response = User[]
           }

@@ -65,6 +65,11 @@ describe('validateMorphSchema', () => {
         message: 'Resource "users" is missing path.',
       },
       {
+        code: 'missing_action_path',
+        severity: 'error',
+        message: 'Action "users.list" is missing path.',
+      },
+      {
         code: 'missing_action_method',
         severity: 'error',
         message: 'Action "users.list" is missing method.',
@@ -105,11 +110,13 @@ describe('validateMorphSchema', () => {
         path = "/users"
 
         action list {
+          path = "/"
           method = GET
           response = User[]
         }
 
         action list {
+          path = "/"
           method = GET
           response = User[]
         }
@@ -148,6 +155,7 @@ describe('validateMorphSchema', () => {
         path = "/users"
 
         action list {
+          path = "/"
           method = GET
           query = MissingQuery
           body = MissingBody
@@ -218,40 +226,41 @@ describe('validateMorphSchema', () => {
         path = "/users"
 
         action missingParams {
-          method = GET
           path = "/:id"
+          method = GET
           response = User
         }
 
         action missingField {
-          method = GET
           path = "/:id/:name"
+          method = GET
           params = MissingNameParams
           response = User
         }
 
         action unusedField {
-          method = GET
           path = "/:id"
+          method = GET
           params = ExtraNameParams
           response = User
         }
 
         action optionalMismatch {
-          method = GET
           path = "/:id/:name"
+          method = GET
           params = OptionalMismatchParams
           response = User
         }
 
         action requiredMismatch {
-          method = GET
           path = "/:id/:name?"
+          method = GET
           params = RequiredMismatchParams
           response = User
         }
 
         action noPathParams {
+          path = "/"
           method = GET
           params = ExtraNameParams
           response = User

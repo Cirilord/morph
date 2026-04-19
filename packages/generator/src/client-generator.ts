@@ -159,7 +159,7 @@ function generateResourceMember(
   basePath: string,
   objectTypeNames: Set<string>
 ): string[] {
-  const path = joinPaths(basePath, resource.path);
+  const path = joinPaths(basePath, requirePath(resource.path, `resource "${resource.name}"`));
 
   return [
     '',
@@ -179,7 +179,7 @@ function generateNestedResourceMember(
   indentSize: number
 ): string[] {
   const indent = ' '.repeat(indentSize);
-  const path = joinPaths(basePath, resource.path);
+  const path = joinPaths(basePath, requirePath(resource.path, `resource "${resource.name}"`));
 
   return [
     `${indent}${resource.name}: {`,
@@ -191,8 +191,8 @@ function generateNestedResourceMember(
   ];
 }
 
-function joinPaths(basePath: string, path: string | undefined): string {
-  if (path === undefined || path.length === 0) {
+function joinPaths(basePath: string, path: string): string {
+  if (path.length === 0 || path === '/') {
     return basePath;
   }
 
@@ -215,7 +215,7 @@ function generateActionMember(
   const indent = ' '.repeat(indentSize);
   const bodyIndent = ' '.repeat(indentSize + 2);
   const requestIndent = ' '.repeat(indentSize + 4);
-  const path = joinPaths(basePath, action.path);
+  const path = joinPaths(basePath, requirePath(action.path, `action "${action.name}"`));
 
   return [
     `${indent}${action.name}: async (${generateActionParameter(action)}): Promise<${generateActionReturnType(action)}> => {`,
@@ -226,6 +226,14 @@ function generateActionMember(
     `${bodyIndent}});`,
     `${indent}},`,
   ];
+}
+
+function requirePath(path: string | undefined, declaration: string): string {
+  if (path === undefined) {
+    throw new Error(`Missing path for ${declaration}.`);
+  }
+
+  return path;
 }
 
 function generateActionParameter(action: ActionDeclaration): string {

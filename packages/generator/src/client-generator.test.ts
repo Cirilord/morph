@@ -43,6 +43,7 @@ describe('generateMorphClient', () => {
         path = "/users"
 
         action list {
+          path = "/"
           method = GET
           headers = AuthHeaders
           query = ListUsersQuery
@@ -50,13 +51,14 @@ describe('generateMorphClient', () => {
         }
 
         action getById {
-          method = GET
           path = "/:id/:name?"
+          method = GET
           params = UserIdParams
           response = User
         }
 
         action create {
+          path = "/"
           method = POST
           headers = AuthHeaders
           body = CreateUserBody
