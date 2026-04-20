@@ -28,6 +28,9 @@
     "bin",
     "README.md"
   ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "build": "tsup",
     "check-types": "tsc --noEmit",
