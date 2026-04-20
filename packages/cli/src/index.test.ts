@@ -170,9 +170,7 @@ describe('runCli', () => {
     await expect(readFile(join(generatedDirectory, 'maps.ts'), 'utf8')).resolves.toContain(
       'id: { externalName: "usr_id" }'
     );
-    await expect(readFile(join(generatedDirectory, 'index.ts'), 'utf8')).resolves.toContain(
-      "export * from './types';"
-    );
+    await expect(readFile(join(generatedDirectory, 'index.ts'), 'utf8')).resolves.toContain("export * from './types';");
   });
 
   it('generates client files from a positional schema path', async () => {
