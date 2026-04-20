@@ -1,5 +1,5 @@
 {
-  "name": "midlane",
+  "name": "midlane-monorepo",
   "private": true,
   "type": "module",
   "scripts": {

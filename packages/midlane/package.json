@@ -1,0 +1,27 @@
+{
+  "name": "midlane",
+  "version": "0.1.0",
+  "description": "Typed API layer and client generator.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "midlane": "./bin/midlane.js"
+  },
+  "exports": {
+    ".": "./bin/midlane.js"
+  },
+  "files": [
+    "bin",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node -e \"\"",
+    "check-types": "node -e \"\"",
+    "lint": "biome ci .",
+    "test": "node -e \"\""
+  },
+  "dependencies": {
+    "@midlane/cli": "0.0.0",
+    "@midlane/runtime": "0.0.0"
+  }
+}

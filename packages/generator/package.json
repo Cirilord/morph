@@ -1,7 +1,7 @@
 {
   "name": "@midlane/generator",
   "version": "0.0.0",
-  "private": true,
+  "license": "MIT",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -19,7 +19,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@midlane/parser": "*"
+    "@midlane/parser": "0.0.0"
   },
   "devDependencies": {
     "tsup": "^8.5.1",

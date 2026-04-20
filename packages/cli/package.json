@@ -1,7 +1,7 @@
 {
   "name": "@midlane/cli",
   "version": "0.0.0",
-  "private": true,
+  "license": "MIT",
   "type": "module",
   "bin": {
     "midlane": "./dist/index.js"
@@ -22,9 +22,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@midlane/config": "*",
-    "@midlane/generator": "*",
-    "@midlane/parser": "*",
+    "@midlane/config": "0.0.0",
+    "@midlane/generator": "0.0.0",
+    "@midlane/parser": "0.0.0",
     "cac": "^7.0.0"
   },
   "devDependencies": {
