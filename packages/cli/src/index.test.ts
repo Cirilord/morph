@@ -28,7 +28,7 @@ describe('runCli', () => {
     `);
     const io = createTestIO();
 
-    const exitCode = await runCli(['node', 'morph', 'validate', '--schema', schemaPath], io);
+    const exitCode = await runCli(['node', 'midlane', 'validate', '--schema', schemaPath], io);
 
     expect(exitCode).toBe(0);
     expect(io.stdoutOutput()).toContain('Schema is valid:');
@@ -57,18 +57,18 @@ describe('runCli', () => {
     `);
     const io = createTestIO();
 
-    const exitCode = await runCli(['node', 'morph', 'validate', schemaPath], io);
+    const exitCode = await runCli(['node', 'midlane', 'validate', schemaPath], io);
 
     expect(exitCode).toBe(0);
     expect(io.stdoutOutput()).toContain('Schema is valid:');
     expect(io.stderrOutput()).toBe('');
   });
 
-  it('validates a schema file from morph config', async () => {
+  it('validates a schema file from midlane config', async () => {
     const project = await writeProject({
       config: `
         export default {
-          schema: './morph/schema.morph',
+          schema: './midlane/schema.midlane',
         };
       `,
       schema: `
@@ -93,7 +93,7 @@ describe('runCli', () => {
     });
     const io = createTestIO();
 
-    const exitCode = await runCli(['node', 'morph', 'validate', '--config', project.configPath], io);
+    const exitCode = await runCli(['node', 'midlane', 'validate', '--config', project.configPath], io);
 
     expect(exitCode).toBe(0);
     expect(io.stdoutOutput()).toContain('Schema is valid:');
@@ -118,7 +118,7 @@ describe('runCli', () => {
     `);
     const io = createTestIO();
 
-    const exitCode = await runCli(['node', 'morph', 'validate', '--schema', schemaPath], io);
+    const exitCode = await runCli(['node', 'midlane', 'validate', '--schema', schemaPath], io);
 
     expect(exitCode).toBe(1);
     expect(io.stdoutOutput()).toBe('');
@@ -130,7 +130,7 @@ describe('runCli', () => {
   it('returns an error for missing schema files', async () => {
     const io = createTestIO();
 
-    const exitCode = await runCli(['node', 'morph', 'validate', '--schema', './missing.schema.morph'], io);
+    const exitCode = await runCli(['node', 'midlane', 'validate', '--schema', './missing.schema.midlane'], io);
 
     expect(exitCode).toBe(1);
     expect(io.stdoutOutput()).toBe('');
@@ -160,11 +160,11 @@ describe('runCli', () => {
     `);
     const io = createTestIO();
 
-    const exitCode = await runCli(['node', 'morph', 'generate', '--schema', schemaPath], io);
+    const exitCode = await runCli(['node', 'midlane', 'generate', '--schema', schemaPath], io);
     const generatedDirectory = join(schemaPath, '..', 'generated', 'client');
 
     expect(exitCode).toBe(0);
-    expect(io.stdoutOutput()).toContain('Generated Morph client:');
+    expect(io.stdoutOutput()).toContain('Generated Midlane client:');
     expect(io.stderrOutput()).toBe('');
     await expect(readFile(join(generatedDirectory, 'types.ts'), 'utf8')).resolves.toContain('export type User = {');
     await expect(readFile(join(generatedDirectory, 'maps.ts'), 'utf8')).resolves.toContain(
@@ -197,25 +197,25 @@ describe('runCli', () => {
     `);
     const io = createTestIO();
 
-    const exitCode = await runCli(['node', 'morph', 'generate', schemaPath], io);
+    const exitCode = await runCli(['node', 'midlane', 'generate', schemaPath], io);
     const generatedDirectory = join(schemaPath, '..', 'generated', 'client');
 
     expect(exitCode).toBe(0);
-    expect(io.stdoutOutput()).toContain('Generated Morph client:');
+    expect(io.stdoutOutput()).toContain('Generated Midlane client:');
     expect(io.stderrOutput()).toBe('');
     await expect(readFile(join(generatedDirectory, 'client.ts'), 'utf8')).resolves.toContain(
-      'export class MorphClient'
+      'export class MidlaneClient'
     );
   });
 
-  it('generates client files using schema and datasource from morph config', async () => {
+  it('generates client files using schema and datasource from midlane config', async () => {
     const project = await writeProject({
       config: `
         export default {
           datasource: {
             url: 'https://api.example.com',
           },
-          schema: './morph/schema.morph',
+          schema: './midlane/schema.midlane',
         };
       `,
       schema: `
@@ -240,10 +240,10 @@ describe('runCli', () => {
     });
     const io = createTestIO();
 
-    const exitCode = await runCli(['node', 'morph', 'generate', '--config', project.configPath], io);
+    const exitCode = await runCli(['node', 'midlane', 'generate', '--config', project.configPath], io);
 
     expect(exitCode).toBe(0);
-    expect(io.stdoutOutput()).toContain('Generated Morph client:');
+    expect(io.stdoutOutput()).toContain('Generated Midlane client:');
     expect(io.stderrOutput()).toBe('');
     await expect(readFile(join(project.directory, 'generated', 'client', 'client.ts'), 'utf8')).resolves.toContain(
       'const defaultBaseUrl = "https://api.example.com";'
@@ -252,8 +252,8 @@ describe('runCli', () => {
 });
 
 async function writeSchema(source: string): Promise<string> {
-  const directory = await mkdtemp(join(tmpdir(), 'morph-cli-'));
-  const schemaPath = join(directory, 'schema.morph');
+  const directory = await mkdtemp(join(tmpdir(), 'midlane-cli-'));
+  const schemaPath = join(directory, 'schema.midlane');
 
   await writeFile(schemaPath, source);
 
@@ -265,12 +265,12 @@ async function writeProject(input: { config: string; schema: string }): Promise<
   directory: string;
   schemaPath: string;
 }> {
-  const directory = await mkdtemp(join(tmpdir(), 'morph-cli-'));
-  const morphDirectory = join(directory, 'morph');
-  const configPath = join(directory, 'morph.config.js');
-  const schemaPath = join(morphDirectory, 'schema.morph');
+  const directory = await mkdtemp(join(tmpdir(), 'midlane-cli-'));
+  const midlaneDirectory = join(directory, 'midlane');
+  const configPath = join(directory, 'midlane.config.js');
+  const schemaPath = join(midlaneDirectory, 'schema.midlane');
 
-  await mkdir(morphDirectory, { recursive: true });
+  await mkdir(midlaneDirectory, { recursive: true });
   await writeFile(configPath, input.config);
   await writeFile(schemaPath, input.schema);
 

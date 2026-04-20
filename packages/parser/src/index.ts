@@ -10,7 +10,7 @@ export type {
   TypeRef,
 } from './ast.js';
 export type { Diagnostic, DiagnosticCode, DiagnosticSeverity } from './diagnostic.js';
-export { ParseError, parseMorphSchema } from './parser.js';
+export { ParseError, parseMidlaneSchema } from './parser.js';
 export type { Punctuation, Token } from './tokenizer.js';
 export { TokenizeError, tokenize } from './tokenizer.js';
-export { validateMorphSchema } from './validator.js';
+export { validateMidlaneSchema } from './validator.js';

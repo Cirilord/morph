@@ -1,11 +1,11 @@
-import { MorphClient } from '../generated/morph';
+import { MidlaneClient } from '../generated/midlane';
 
-const morph = new MorphClient();
+const midlane = new MidlaneClient();
 
 export default async function Page() {
   const [users, selectedUser] = await Promise.all([
-    morph.users.list(),
-    morph.users.getById({
+    midlane.users.list(),
+    midlane.users.getById({
       params: {
         id: 1,
       },
@@ -17,7 +17,7 @@ export default async function Page() {
     <main className="shell">
       <section className="summary">
         <div>
-          <p className="eyebrow">Morph + Next.js</p>
+          <p className="eyebrow">Midlane + Next.js</p>
           <h1>JSONPlaceholder users</h1>
         </div>
         <div className="metric">

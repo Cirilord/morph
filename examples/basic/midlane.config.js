@@ -1,8 +1,8 @@
-import { defineConfig } from '@morph/config';
+import { defineConfig } from '@midlane/config';
 
 export default defineConfig({
   datasource: {
     url: process.env.API_URL ?? 'https://legacy-api.example.com',
   },
-  schema: 'morph/schema.morph',
+  schema: 'midlane/schema.midlane',
 });

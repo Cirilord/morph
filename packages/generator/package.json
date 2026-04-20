@@ -1,5 +1,5 @@
 {
-  "name": "@morph/generator",
+  "name": "@midlane/generator",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -19,7 +19,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@morph/parser": "*"
+    "@midlane/parser": "*"
   },
   "devDependencies": {
     "tsup": "^8.5.1",

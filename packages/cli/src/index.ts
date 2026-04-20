@@ -1,9 +1,9 @@
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import type { MorphConfig } from '@morph/config';
-import { generateMorphClient } from '@morph/generator';
-import { ParseError, parseMorphSchema, TokenizeError, validateMorphSchema } from '@morph/parser';
+import type { MidlaneConfig } from '@midlane/config';
+import { generateMidlaneClient } from '@midlane/generator';
+import { ParseError, parseMidlaneSchema, TokenizeError, validateMidlaneSchema } from '@midlane/parser';
 import { cac } from 'cac';
 
 type CliIO = {
@@ -25,16 +25,16 @@ type GenerateOptions = {
   output?: string;
 };
 
-const defaultConfigPath = 'morph.config.js';
-const defaultSchemaPath = 'morph/schema.morph';
+const defaultConfigPath = 'midlane.config.js';
+const defaultSchemaPath = 'midlane/schema.midlane';
 
 export async function runCli(argv: string[], io: CliIO = process): Promise<number> {
-  const cli = cac('morph');
+  const cli = cac('midlane');
   let exitCode = 0;
 
   cli
-    .command('validate [schema]', 'Validate a Morph schema')
-    .option('--config <path>', 'Path to the Morph config file')
+    .command('validate [schema]', 'Validate a Midlane schema')
+    .option('--config <path>', 'Path to the Midlane config file')
     .option('--schema <path>', 'Path to the schema file', {
       default: defaultSchemaPath,
     })
@@ -45,8 +45,8 @@ export async function runCli(argv: string[], io: CliIO = process): Promise<numbe
     });
 
   cli
-    .command('generate [schema]', 'Generate a Morph client')
-    .option('--config <path>', 'Path to the Morph config file')
+    .command('generate [schema]', 'Generate a Midlane client')
+    .option('--config <path>', 'Path to the Midlane config file')
     .option('--schema <path>', 'Path to the schema file', {
       default: defaultSchemaPath,
     })
@@ -140,7 +140,7 @@ async function generateCommand(
       resolveOutputBasePath(schemaPath, options.output),
       options.output ?? schema.generator?.output
     );
-    const generatedFiles = generateMorphClient(schema, {
+    const generatedFiles = generateMidlaneClient(schema, {
       datasourceUrl: config.config.datasource?.url,
     });
 
@@ -150,7 +150,7 @@ async function generateCommand(
       await writeFile(join(outputPath, file.path), file.content);
     }
 
-    io.stdout.write(`Generated Morph client: ${outputPath}\n`);
+    io.stdout.write(`Generated Midlane client: ${outputPath}\n`);
 
     return 0;
   } catch (error) {
@@ -160,7 +160,7 @@ async function generateCommand(
 }
 
 type LoadedConfig = {
-  config: MorphConfig;
+  config: MidlaneConfig;
   path?: string | undefined;
 };
 
@@ -173,8 +173,8 @@ async function loadConfig(configPathOption: string | undefined): Promise<LoadedC
 
   const module = (await import(pathToFileURL(configPath).href)) as { default?: unknown };
 
-  if (!isMorphConfig(module.default)) {
-    throw new Error(`Morph config "${configPath}" must export a config object as default.`);
+  if (!isMidlaneConfig(module.default)) {
+    throw new Error(`Midlane config "${configPath}" must export a config object as default.`);
   }
 
   return {
@@ -192,7 +192,7 @@ async function pathExists(path: string): Promise<boolean> {
   }
 }
 
-function isMorphConfig(value: unknown): value is MorphConfig {
+function isMidlaneConfig(value: unknown): value is MidlaneConfig {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
@@ -218,8 +218,8 @@ function resolveSchemaPath(
 
 async function readAndValidateSchema(schemaPath: string) {
   const source = await readFile(schemaPath, 'utf8');
-  const schema = parseMorphSchema(source);
-  const diagnostics = validateMorphSchema(schema);
+  const schema = parseMidlaneSchema(source);
+  const diagnostics = validateMidlaneSchema(schema);
 
   return { schema, diagnostics };
 }

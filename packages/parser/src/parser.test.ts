@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseMorphSchema } from './parser.js';
+import { parseMidlaneSchema } from './parser.js';
 
-describe('parseMorphSchema', () => {
+describe('parseMidlaneSchema', () => {
   it('rejects datasource declarations', () => {
     expect(() =>
-      parseMorphSchema(`
+      parseMidlaneSchema(`
         datasource api {
           url = env("API_URL")
         }
@@ -13,8 +13,8 @@ describe('parseMorphSchema', () => {
     ).toThrow('Unknown top-level declaration "datasource"');
   });
 
-  it('parses the first Morph schema shape', () => {
-    const schema = parseMorphSchema(`
+  it('parses the first Midlane schema shape', () => {
+    const schema = parseMidlaneSchema(`
       generator client {
         output = "./generated/client"
       }
@@ -87,7 +87,7 @@ describe('parseMorphSchema', () => {
   });
 
   it('parses nested resources and enums', () => {
-    const schema = parseMorphSchema(`
+    const schema = parseMidlaneSchema(`
       enum UserStatus {
         ACTIVE
         BLOCKED

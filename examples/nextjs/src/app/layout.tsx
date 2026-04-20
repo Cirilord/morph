@@ -3,8 +3,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Morph Next.js Example',
-  description: 'A Morph client running inside a Next.js app.',
+  title: 'Midlane Next.js Example',
+  description: 'A Midlane client running inside a Next.js app.',
 };
 
 export default function RootLayout({

@@ -1,4 +1,4 @@
-# Morph
+# Midlane
 
 Typed API layer and client generator for REST APIs.
 
@@ -8,7 +8,7 @@ Project bootstrap in progress.
 
 ## Workspace
 
-- `@morph/parser`: parser for `.morph` schemas
+- `@midlane/parser`: parser for `.midlane` schemas
 
 Planned packages:
 

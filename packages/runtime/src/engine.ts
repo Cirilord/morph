@@ -1,12 +1,12 @@
 import type { MapperObject } from './mapper.js';
 import { toExternal, toInternal } from './mapper.js';
 
-export type MorphEngineOptions = {
+export type MidlaneEngineOptions = {
   baseUrl: string;
   fetcher?: typeof fetch;
 };
 
-export type MorphEngineRequest = {
+export type MidlaneEngineRequest = {
   method: string;
   path: string;
   body?: unknown;
@@ -19,16 +19,16 @@ export type MorphEngineRequest = {
   responseMapper?: MapperObject | undefined;
 };
 
-export class MorphEngine {
+export class MidlaneEngine {
   readonly #baseUrl: string;
   readonly #fetcher: typeof fetch;
 
-  constructor(options: MorphEngineOptions) {
+  constructor(options: MidlaneEngineOptions) {
     this.#baseUrl = options.baseUrl;
     this.#fetcher = options.fetcher ?? fetch;
   }
 
-  async request<T>(request: MorphEngineRequest): Promise<T> {
+  async request<T>(request: MidlaneEngineRequest): Promise<T> {
     const query = this.#mapRecord(request.query, request.queryMapper);
     const headers = this.#mapRecord(request.headers, request.headersMapper);
     const body = this.#mapValue(request.body, request.bodyMapper);
@@ -47,7 +47,7 @@ export class MorphEngine {
     const data = await this.#readJson(response);
 
     if (!response.ok) {
-      throw new Error(`Morph request failed with status ${response.status}.`);
+      throw new Error(`Midlane request failed with status ${response.status}.`);
     }
 
     return this.#mapResponse<T>(data, request.responseMapper);

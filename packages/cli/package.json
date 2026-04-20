@@ -1,10 +1,10 @@
 {
-  "name": "@morph/cli",
+  "name": "@midlane/cli",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "bin": {
-    "morph": "./dist/index.js"
+    "midlane": "./dist/index.js"
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -22,9 +22,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@morph/config": "*",
-    "@morph/generator": "*",
-    "@morph/parser": "*",
+    "@midlane/config": "*",
+    "@midlane/generator": "*",
+    "@midlane/parser": "*",
     "cac": "^7.0.0"
   },
   "devDependencies": {

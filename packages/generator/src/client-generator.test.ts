@@ -1,11 +1,11 @@
-import { parseMorphSchema } from '@morph/parser';
+import { parseMidlaneSchema } from '@midlane/parser';
 import { describe, expect, it } from 'vitest';
 
-import { generateMorphClient } from './client-generator.js';
+import { generateMidlaneClient } from './client-generator.js';
 
-describe('generateMorphClient', () => {
+describe('generateMidlaneClient', () => {
   it('generates types, maps, client, and index files', () => {
-    const schema = parseMorphSchema(`
+    const schema = parseMidlaneSchema(`
       generator client {
         output = "./generated/client"
       }
@@ -67,11 +67,11 @@ describe('generateMorphClient', () => {
       }
     `);
 
-    expect(generateMorphClient(schema, { datasourceUrl: 'https://api.example.com' })).toEqual([
+    expect(generateMidlaneClient(schema, { datasourceUrl: 'https://api.example.com' })).toEqual([
       {
         path: 'types.ts',
         content: [
-          'export type MorphClientOptions = {',
+          'export type MidlaneClientOptions = {',
           '  baseUrl?: string;',
           '  fetcher?: typeof fetch;',
           '};',
@@ -107,7 +107,7 @@ describe('generateMorphClient', () => {
       {
         path: 'maps.ts',
         content: [
-          "import type { MapperObject } from '@morph/runtime';",
+          "import type { MapperObject } from '@midlane/runtime';",
           '',
           'export const UserMap = {',
           '  id: { externalName: "usr_id" },',
@@ -139,17 +139,17 @@ describe('generateMorphClient', () => {
       {
         path: 'client.ts',
         content: [
-          "import type { AuthHeaders, CreateUserBody, ListUsersQuery, MorphClientOptions, User, UserIdParams } from './types.js';",
-          "import { MorphEngine } from '@morph/runtime';",
+          "import type { AuthHeaders, CreateUserBody, ListUsersQuery, MidlaneClientOptions, User, UserIdParams } from './types.js';",
+          "import { MidlaneEngine } from '@midlane/runtime';",
           "import { AuthHeadersMap, CreateUserBodyMap, ListUsersQueryMap, UserMap } from './maps.js';",
           '',
           'const defaultBaseUrl = "https://api.example.com";',
           '',
-          'export class MorphClient {',
-          '  readonly #engine: MorphEngine;',
+          'export class MidlaneClient {',
+          '  readonly #engine: MidlaneEngine;',
           '',
-          '  constructor(options: MorphClientOptions = {}) {',
-          '    this.#engine = new MorphEngine({',
+          '  constructor(options: MidlaneClientOptions = {}) {',
+          '    this.#engine = new MidlaneEngine({',
           '      ...options,',
           '      baseUrl: options.baseUrl ?? defaultBaseUrl,',
           '    });',
@@ -194,7 +194,7 @@ describe('generateMorphClient', () => {
       {
         path: 'index.ts',
         content: [
-          "export { MorphClient } from './client.js';",
+          "export { MidlaneClient } from './client.js';",
           "export * from './types.js';",
           "export { maps, UserMap, ListUsersQueryMap, UserIdParamsMap, AuthHeadersMap, CreateUserBodyMap } from './maps.js';",
           '',

@@ -6,6 +6,6 @@
   },
   "editor.formatOnSave": true,
   "files.associations": {
-    "*.morph": "morph"
+    "*.midlane": "midlane"
   }
 }

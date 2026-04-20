@@ -156,10 +156,10 @@
   resolved "https://registry.yarnpkg.com/@img/sharp-win32-x64/-/sharp-win32-x64-0.34.5.tgz#a81ffb00e69267cd0a1d626eaedb8a8430b2b2f8"
   integrity sha512-+29YMsqY2/9eFEiW93eqWnuLcWcufowXewwSNIT6UwZdUUCrM3oFjMWH/Z6/TMmb4hlFenmfAVbpWeup2jryCw==
 
-"@morph/config@file:../../packages/config":
+"@midlane/config@file:../../packages/config":
   version "0.0.0"
 
-"@morph/runtime@file:../../packages/runtime":
+"@midlane/runtime@file:../../packages/runtime":
   version "0.0.0"
 
 "@next/env@16.2.4":

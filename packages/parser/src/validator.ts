@@ -13,7 +13,7 @@ const scalarTypes = new Set(['String', 'Int', 'Float', 'Boolean', 'DateTime', 'J
 const bodylessMethods = new Set(['GET', 'HEAD']);
 const pascalCaseNamePattern = /^[A-Z][A-Za-z0-9]*$/;
 
-export function validateMorphSchema(schema: ApiSchema): Diagnostic[] {
+export function validateMidlaneSchema(schema: ApiSchema): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
   const declaredTypes = collectDeclaredTypes(schema, diagnostics);
   const typeDeclarations = new Map(schema.types.map((type) => [type.name, type]));

@@ -6,14 +6,14 @@ import type {
   ResourceDeclaration,
   TypeDeclaration,
   TypeRef,
-} from '@morph/parser';
+} from '@midlane/parser';
 
 export type GeneratedFile = {
   path: string;
   content: string;
 };
 
-export type GenerateMorphClientOptions = {
+export type GenerateMidlaneClientOptions = {
   datasourceUrl?: string | undefined;
 };
 
@@ -26,7 +26,7 @@ const scalarTypes = new Map([
   ['Json', 'unknown'],
 ]);
 
-export function generateMorphClient(schema: ApiSchema, options: GenerateMorphClientOptions = {}): GeneratedFile[] {
+export function generateMidlaneClient(schema: ApiSchema, options: GenerateMidlaneClientOptions = {}): GeneratedFile[] {
   return [
     {
       path: 'types.ts',
@@ -47,13 +47,13 @@ export function generateMorphClient(schema: ApiSchema, options: GenerateMorphCli
   ];
 }
 
-function generateClient(schema: ApiSchema, options: GenerateMorphClientOptions): string {
+function generateClient(schema: ApiSchema, options: GenerateMidlaneClientOptions): string {
   const objectTypeNames = new Set(schema.types.map((type) => type.name));
   const typeImports = collectClientTypeImports(schema);
   const mapImports = collectClientMapImports(schema, objectTypeNames);
   const imports = [
     `import type { ${typeImports.join(', ')} } from './types.js';`,
-    "import { MorphEngine } from '@morph/runtime';",
+    "import { MidlaneEngine } from '@midlane/runtime';",
     mapImports.length > 0 ? `import { ${mapImports.join(', ')} } from './maps.js';` : undefined,
   ].filter((line) => line !== undefined);
 
@@ -61,10 +61,10 @@ function generateClient(schema: ApiSchema, options: GenerateMorphClientOptions):
     ...imports,
     ...generateDefaultBaseUrl(options.datasourceUrl),
     '',
-    'export class MorphClient {',
-    '  readonly #engine: MorphEngine;',
+    'export class MidlaneClient {',
+    '  readonly #engine: MidlaneEngine;',
     '',
-    `  constructor(options: MorphClientOptions${options.datasourceUrl === undefined ? '' : ' = {}'}) {`,
+    `  constructor(options: MidlaneClientOptions${options.datasourceUrl === undefined ? '' : ' = {}'}) {`,
     ...generateEngineConstructorLines(options.datasourceUrl),
     '  }',
     ...schema.resources.flatMap((resource) => generateResourceMember(resource, '', objectTypeNames)),
@@ -83,11 +83,11 @@ function generateDefaultBaseUrl(datasourceUrl: string | undefined): string[] {
 
 function generateEngineConstructorLines(datasourceUrl: string | undefined): string[] {
   if (datasourceUrl === undefined) {
-    return ['    this.#engine = new MorphEngine(options);'];
+    return ['    this.#engine = new MidlaneEngine(options);'];
   }
 
   return [
-    '    this.#engine = new MorphEngine({',
+    '    this.#engine = new MidlaneEngine({',
     '      ...options,',
     '      baseUrl: options.baseUrl ?? defaultBaseUrl,',
     '    });',
@@ -95,7 +95,7 @@ function generateEngineConstructorLines(datasourceUrl: string | undefined): stri
 }
 
 function collectClientTypeImports(schema: ApiSchema): string[] {
-  const imports = new Set(['MorphClientOptions']);
+  const imports = new Set(['MidlaneClientOptions']);
 
   for (const resource of schema.resources) {
     collectResourceTypeImports(resource, imports);
@@ -312,7 +312,7 @@ function generateActionRequestProperties(
   return properties;
 }
 
-function generateTypes(schema: ApiSchema, options: GenerateMorphClientOptions): string {
+function generateTypes(schema: ApiSchema, options: GenerateMidlaneClientOptions): string {
   const chunks = [
     generateClientOptions(options.datasourceUrl),
     ...schema.enums.map(generateEnum),
@@ -325,7 +325,7 @@ function generateTypes(schema: ApiSchema, options: GenerateMorphClientOptions): 
 function generateClientOptions(datasourceUrl: string | undefined): string {
   const baseUrlProperty = datasourceUrl === undefined ? '  baseUrl: string;' : '  baseUrl?: string;';
 
-  return ['export type MorphClientOptions = {', baseUrlProperty, '  fetcher?: typeof fetch;', '};'].join('\n');
+  return ['export type MidlaneClientOptions = {', baseUrlProperty, '  fetcher?: typeof fetch;', '};'].join('\n');
 }
 
 function generateEnum(enumDeclaration: EnumDeclaration): string {
@@ -358,7 +358,7 @@ function generateMaps(types: TypeDeclaration[]): string {
   const mapEntries = types.map((type) => `  ${type.name}: ${type.name}Map,`);
 
   return [
-    "import type { MapperObject } from '@morph/runtime';",
+    "import type { MapperObject } from '@midlane/runtime';",
     '',
     ...mapDeclarations,
     '',
@@ -407,7 +407,7 @@ function generateIndex(types: TypeDeclaration[]): string {
   const mapExports = types.map((type) => `${type.name}Map`).join(', ');
 
   return [
-    `export { MorphClient } from './client.js';`,
+    `export { MidlaneClient } from './client.js';`,
     `export * from './types.js';`,
     `export { maps${mapExports.length > 0 ? `, ${mapExports}` : ''} } from './maps.js';`,
     '',

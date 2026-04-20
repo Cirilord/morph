@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-  "name": "Morph",
-  "scopeName": "source.morph",
+  "name": "Midlane",
+  "scopeName": "source.midlane",
   "patterns": [
     {
       "include": "#comments"
@@ -44,7 +44,7 @@
     "comments": {
       "patterns": [
         {
-          "name": "comment.line.double-slash.morph",
+          "name": "comment.line.double-slash.midlane",
           "match": "//.*$"
         }
       ]
@@ -52,12 +52,12 @@
     "strings": {
       "patterns": [
         {
-          "name": "string.quoted.double.morph",
+          "name": "string.quoted.double.midlane",
           "begin": "\"",
           "end": "\"",
           "patterns": [
             {
-              "name": "constant.character.escape.morph",
+              "name": "constant.character.escape.midlane",
               "match": "\\\\."
             }
           ]
@@ -67,11 +67,11 @@
     "attributes": {
       "patterns": [
         {
-          "name": "support.function.attribute.map.morph",
+          "name": "support.function.attribute.map.midlane",
           "match": "@map\\b"
         },
         {
-          "name": "entity.other.attribute-name.morph",
+          "name": "entity.other.attribute-name.midlane",
           "match": "@[A-Za-z_][A-Za-z0-9_]*"
         }
       ]
@@ -79,65 +79,65 @@
     "declarations": {
       "patterns": [
         {
-          "name": "meta.declaration.generator.morph",
+          "name": "meta.declaration.generator.midlane",
           "match": "\\b(generator)\\s+([A-Za-z_][A-Za-z0-9_]*)",
           "captures": {
             "1": {
-              "name": "keyword.declaration.generator.morph"
+              "name": "keyword.declaration.generator.midlane"
             },
             "2": {
-              "name": "entity.name.type.morph"
+              "name": "entity.name.type.midlane"
             }
           }
         },
         {
-          "name": "meta.declaration.type.morph",
+          "name": "meta.declaration.type.midlane",
           "match": "\\b(type)\\s+([A-Za-z_][A-Za-z0-9_]*)",
           "captures": {
             "1": {
-              "name": "keyword.declaration.type.morph"
+              "name": "keyword.declaration.type.midlane"
             },
             "2": {
-              "name": "entity.name.type.morph"
+              "name": "entity.name.type.midlane"
             }
           }
         },
         {
-          "name": "meta.declaration.enum.morph",
+          "name": "meta.declaration.enum.midlane",
           "match": "\\b(enum)\\s+([A-Za-z_][A-Za-z0-9_]*)",
           "captures": {
             "1": {
-              "name": "keyword.declaration.enum.morph"
+              "name": "keyword.declaration.enum.midlane"
             },
             "2": {
-              "name": "entity.name.type.enum.morph"
+              "name": "entity.name.type.enum.midlane"
             }
           }
         },
         {
-          "name": "meta.declaration.resource.morph",
+          "name": "meta.declaration.resource.midlane",
           "match": "\\b(resource)\\s+([A-Za-z_][A-Za-z0-9_]*)",
           "captures": {
             "1": {
-              "name": "keyword.declaration.resource.morph"
+              "name": "keyword.declaration.resource.midlane"
             },
             "2": {
-              "name": "entity.name.namespace.resource.morph"
+              "name": "entity.name.namespace.resource.midlane"
             }
           }
         },
         {
-          "name": "meta.declaration.resource.morph",
+          "name": "meta.declaration.resource.midlane",
           "begin": "\\b(action)\\b",
           "beginCaptures": {
             "1": {
-              "name": "keyword.declaration.resource.morph"
+              "name": "keyword.declaration.resource.midlane"
             }
           },
           "end": "(?=\\{)|$",
           "patterns": [
             {
-              "name": "entity.name.namespace.resource.morph",
+              "name": "entity.name.namespace.resource.midlane",
               "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b"
             },
             {
@@ -150,7 +150,7 @@
     "properties": {
       "patterns": [
         {
-          "name": "support.type.property-name.morph",
+          "name": "support.type.property-name.midlane",
           "match": "\\b(path|method|params|query|body|headers|response|output)\\b(?=\\s*=)"
         }
       ]
@@ -158,17 +158,17 @@
     "actionTypeRefs": {
       "patterns": [
         {
-          "name": "meta.action.type-reference.morph",
+          "name": "meta.action.type-reference.midlane",
           "match": "\\b(params|query|body|headers|response)\\b(\\s*=\\s*)([A-Za-z_][A-Za-z0-9_]*)",
           "captures": {
             "1": {
-              "name": "support.type.property-name.morph"
+              "name": "support.type.property-name.midlane"
             },
             "2": {
-              "name": "keyword.operator.assignment.morph"
+              "name": "keyword.operator.assignment.midlane"
             },
             "3": {
-              "name": "keyword.declaration.resource.morph"
+              "name": "keyword.declaration.resource.midlane"
             }
           }
         }
@@ -177,11 +177,11 @@
     "fields": {
       "patterns": [
         {
-          "name": "meta.field.morph",
+          "name": "meta.field.midlane",
           "match": "^\\s*(?!(?:generator|type|enum|resource|action)\\b)([A-Za-z_][A-Za-z0-9_]*)\\s+(?=[A-Za-z_][A-Za-z0-9_]*(?:\\?|\\[\\])?)",
           "captures": {
             "1": {
-              "name": "support.type.property-name.morph"
+              "name": "support.type.property-name.midlane"
             }
           }
         }
@@ -190,20 +190,20 @@
     "fieldTypeRefs": {
       "patterns": [
         {
-          "name": "meta.field.type-reference.morph",
+          "name": "meta.field.type-reference.midlane",
           "match": "^\\s*(?!(?:generator|type|enum|resource|action)\\b)([A-Za-z_][A-Za-z0-9_]*)(\\s+)(?!(?:String|Int|Float|Boolean|DateTime|Json)\\b)([A-Za-z_][A-Za-z0-9_]*)(\\?)?(\\[\\])?",
           "captures": {
             "1": {
-              "name": "support.type.property-name.morph"
+              "name": "support.type.property-name.midlane"
             },
             "3": {
-              "name": "keyword.declaration.resource.morph"
+              "name": "keyword.declaration.resource.midlane"
             },
             "4": {
-              "name": "keyword.operator.optional.morph"
+              "name": "keyword.operator.optional.midlane"
             },
             "5": {
-              "name": "keyword.control.array.morph"
+              "name": "keyword.control.array.midlane"
             }
           }
         }
@@ -212,7 +212,7 @@
     "httpMethods": {
       "patterns": [
         {
-          "name": "entity.name.function.http-method.morph",
+          "name": "entity.name.function.http-method.midlane",
           "match": "\\b(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\\b"
         }
       ]
@@ -220,7 +220,7 @@
     "scalars": {
       "patterns": [
         {
-          "name": "support.type.builtin.morph",
+          "name": "support.type.builtin.midlane",
           "match": "\\b(String|Int|Float|Boolean|DateTime|Json)\\b"
         }
       ]
@@ -228,15 +228,15 @@
     "operators": {
       "patterns": [
         {
-          "name": "keyword.operator.assignment.morph",
+          "name": "keyword.operator.assignment.midlane",
           "match": "="
         },
         {
-          "name": "keyword.operator.optional.morph",
+          "name": "keyword.operator.optional.midlane",
           "match": "\\?"
         },
         {
-          "name": "keyword.control.array.morph",
+          "name": "keyword.control.array.midlane",
           "match": "\\[\\]"
         }
       ]
@@ -244,7 +244,7 @@
     "numbers": {
       "patterns": [
         {
-          "name": "constant.numeric.morph",
+          "name": "constant.numeric.midlane",
           "match": "\\b\\d+(?:\\.\\d+)?\\b"
         }
       ]

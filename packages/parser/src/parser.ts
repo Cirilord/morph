@@ -23,7 +23,7 @@ export class ParseError extends Error {
   }
 }
 
-export function parseMorphSchema(source: string): ApiSchema {
+export function parseMidlaneSchema(source: string): ApiSchema {
   return new Parser(tokenize(source)).parseSchema();
 }
 

@@ -1,10 +1,10 @@
-export type MorphConfig = {
+export type MidlaneConfig = {
   datasource?: {
     url?: string | undefined;
   };
   schema?: string | undefined;
 };
 
-export function defineConfig(config: MorphConfig): MorphConfig {
+export function defineConfig(config: MidlaneConfig): MidlaneConfig {
   return config;
 }

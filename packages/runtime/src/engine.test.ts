@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { MorphEngine } from './engine.js';
+import { MidlaneEngine } from './engine.js';
 import type { MapperObject } from './mapper.js';
 
-describe('MorphEngine', () => {
+describe('MidlaneEngine', () => {
   const userMapper: MapperObject = {
     id: { externalName: 'usr_id' },
     name: { externalName: 'usr_name' },
@@ -22,7 +22,7 @@ describe('MorphEngine', () => {
       return Response.json([{ usr_id: 1, usr_name: 'Joao' }]);
     };
 
-    const engine = new MorphEngine({
+    const engine = new MidlaneEngine({
       baseUrl: 'https://api.example.com',
       fetcher,
     });
@@ -60,7 +60,7 @@ describe('MorphEngine', () => {
       return Response.json({ usr_id: 123, usr_name: 'Ana' });
     };
 
-    const engine = new MorphEngine({
+    const engine = new MidlaneEngine({
       baseUrl: 'https://api.example.com',
       fetcher,
     });
@@ -92,7 +92,7 @@ describe('MorphEngine', () => {
       return Response.json({ usr_id: 123, usr_name: 'Ana' });
     };
 
-    const engine = new MorphEngine({
+    const engine = new MidlaneEngine({
       baseUrl: 'https://api.example.com',
       fetcher,
     });
@@ -116,7 +116,7 @@ describe('MorphEngine', () => {
       return Response.json({ usr_id: 123, usr_name: 'Ana' });
     };
 
-    const engine = new MorphEngine({
+    const engine = new MidlaneEngine({
       baseUrl: 'https://api.example.com',
       fetcher,
     });
@@ -135,7 +135,7 @@ describe('MorphEngine', () => {
   });
 
   it('throws on failed responses', async () => {
-    const engine = new MorphEngine({
+    const engine = new MidlaneEngine({
       baseUrl: 'https://api.example.com',
       fetcher: async () => new Response(JSON.stringify({ error: 'Nope' }), { status: 500 }),
     });
@@ -145,6 +145,6 @@ describe('MorphEngine', () => {
         method: 'GET',
         path: '/users',
       })
-    ).rejects.toThrow('Morph request failed with status 500.');
+    ).rejects.toThrow('Midlane request failed with status 500.');
   });
 });

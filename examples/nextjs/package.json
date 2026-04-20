@@ -1,5 +1,5 @@
 {
-  "name": "@morph/example-nextjs",
+  "name": "@midlane/example-nextjs",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,8 +10,8 @@
     "check-types": "yarn generate && next typegen && tsc --noEmit"
   },
   "dependencies": {
-    "@morph/config": "file:../../packages/config",
-    "@morph/runtime": "file:../../packages/runtime",
+    "@midlane/config": "file:../../packages/config",
+    "@midlane/runtime": "file:../../packages/runtime",
     "next": "16.2.4",
     "react": "19.2.5",
     "react-dom": "19.2.5"

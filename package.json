@@ -1,5 +1,5 @@
 {
-  "name": "morph",
+  "name": "midlane",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,7 @@
     "format": "biome check --write .",
     "check-types": "turbo run check-types",
     "test": "turbo run test",
-    "morph": "node packages/cli/dist/index.js"
+    "midlane": "node packages/cli/dist/index.js"
   },
   "devDependencies": {
     "@biomejs/biome": "2.4.12",

@@ -1,2 +1,2 @@
-export type { GeneratedFile, GenerateMorphClientOptions } from './client-generator.js';
-export { generateMorphClient } from './client-generator.js';
+export type { GeneratedFile, GenerateMidlaneClientOptions } from './client-generator.js';
+export { generateMidlaneClient } from './client-generator.js';

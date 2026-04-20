@@ -1,8 +1,8 @@
-import { defineConfig } from '@morph/config';
+import { defineConfig } from '@midlane/config';
 
 export default defineConfig({
   datasource: {
     url: 'https://jsonplaceholder.typicode.com',
   },
-  schema: 'morph/schema.morph',
+  schema: 'midlane/schema.midlane',
 });

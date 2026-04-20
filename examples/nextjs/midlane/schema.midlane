@@ -1,5 +1,5 @@
 generator client {
-  output = "../src/generated/morph"
+  output = "../src/generated/midlane"
 }
 
 type Geo {

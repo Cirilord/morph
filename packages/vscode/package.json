@@ -1,10 +1,10 @@
 {
-  "name": "@morph/vscode",
-  "displayName": "Morph Language Support",
-  "description": "Syntax highlighting for Morph schema files.",
+  "name": "@midlane/vscode",
+  "displayName": "Midlane Language Support",
+  "description": "Syntax highlighting for Midlane schema files.",
   "version": "0.0.0",
   "private": true,
-  "publisher": "morph",
+  "publisher": "midlane",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -20,22 +20,22 @@
   "contributes": {
     "languages": [
       {
-        "id": "morph",
+        "id": "midlane",
         "aliases": [
-          "Morph",
-          "morph"
+          "Midlane",
+          "midlane"
         ],
         "extensions": [
-          ".morph"
+          ".midlane"
         ],
         "configuration": "./language-configuration.json"
       }
     ],
     "grammars": [
       {
-        "language": "morph",
-        "scopeName": "source.morph",
-        "path": "./syntaxes/morph.tmLanguage.json"
+        "language": "midlane",
+        "scopeName": "source.midlane",
+        "path": "./syntaxes/midlane.tmLanguage.json"
       }
     ]
   }

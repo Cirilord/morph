@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseMorphSchema } from './parser.js';
-import { validateMorphSchema } from './validator.js';
+import { parseMidlaneSchema } from './parser.js';
+import { validateMidlaneSchema } from './validator.js';
 
-describe('validateMorphSchema', () => {
+describe('validateMidlaneSchema', () => {
   it('accepts a valid schema', () => {
-    const schema = parseMorphSchema(`
+    const schema = parseMidlaneSchema(`
       generator client {
         output = "./generated/client"
       }
@@ -42,18 +42,18 @@ describe('validateMorphSchema', () => {
       }
     `);
 
-    expect(validateMorphSchema(schema)).toEqual([]);
+    expect(validateMidlaneSchema(schema)).toEqual([]);
   });
 
   it('reports missing root declarations and required properties', () => {
-    const schema = parseMorphSchema(`
+    const schema = parseMidlaneSchema(`
       resource Users {
         action List {
         }
       }
     `);
 
-    expect(validateMorphSchema(schema)).toEqual([
+    expect(validateMidlaneSchema(schema)).toEqual([
       {
         code: 'missing_generator',
         severity: 'error',
@@ -83,7 +83,7 @@ describe('validateMorphSchema', () => {
   });
 
   it('reports duplicate declarations and members', () => {
-    const schema = parseMorphSchema(`
+    const schema = parseMidlaneSchema(`
       generator client {
         output = "./generated/client"
       }
@@ -131,7 +131,7 @@ describe('validateMorphSchema', () => {
       }
     `);
 
-    expect(validateMorphSchema(schema).map((diagnostic) => diagnostic.code)).toEqual([
+    expect(validateMidlaneSchema(schema).map((diagnostic) => diagnostic.code)).toEqual([
       'duplicate_type',
       'duplicate_enum',
       'duplicate_type_field',
@@ -142,7 +142,7 @@ describe('validateMorphSchema', () => {
   });
 
   it('requires PascalCase resource and action names', () => {
-    const schema = parseMorphSchema(`
+    const schema = parseMidlaneSchema(`
       generator client {
         output = "./generated/client"
       }
@@ -162,7 +162,7 @@ describe('validateMorphSchema', () => {
       }
     `);
 
-    expect(validateMorphSchema(schema)).toEqual([
+    expect(validateMidlaneSchema(schema)).toEqual([
       {
         code: 'invalid_resource_name',
         severity: 'error',
@@ -177,7 +177,7 @@ describe('validateMorphSchema', () => {
   });
 
   it('reports unknown referenced types and bodyless method bodies', () => {
-    const schema = parseMorphSchema(`
+    const schema = parseMidlaneSchema(`
       generator client {
         output = "./generated/client"
       }
@@ -199,7 +199,7 @@ describe('validateMorphSchema', () => {
       }
     `);
 
-    expect(validateMorphSchema(schema)).toEqual([
+    expect(validateMidlaneSchema(schema)).toEqual([
       {
         code: 'unknown_type',
         severity: 'error',
@@ -229,7 +229,7 @@ describe('validateMorphSchema', () => {
   });
 
   it('validates action path params against params type fields', () => {
-    const schema = parseMorphSchema(`
+    const schema = parseMidlaneSchema(`
       generator client {
         output = "./generated/client"
       }
@@ -303,7 +303,7 @@ describe('validateMorphSchema', () => {
       }
     `);
 
-    expect(validateMorphSchema(schema)).toEqual([
+    expect(validateMidlaneSchema(schema)).toEqual([
       {
         code: 'missing_action_params',
         severity: 'error',
