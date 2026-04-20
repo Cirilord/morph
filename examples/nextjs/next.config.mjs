@@ -6,7 +6,7 @@ const appDir = dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   outputFileTracingRoot: appDir,
-  transpilePackages: ['@midlane/runtime'],
+  transpilePackages: ['midlane'],
   webpack: (config) => {
     config.resolve.extensionAlias = {
       ...config.resolve.extensionAlias,

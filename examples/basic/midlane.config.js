@@ -1,4 +1,4 @@
-import { defineConfig } from '@midlane/config';
+import { defineConfig } from 'midlane/config';
 
 export default defineConfig({
   datasource: {

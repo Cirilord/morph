@@ -7,21 +7,45 @@
   "bin": {
     "midlane": "./bin/midlane.js"
   },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./bin/midlane.js"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./config": {
+      "types": "./dist/config.d.ts",
+      "default": "./dist/config.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime.d.ts",
+      "default": "./dist/runtime.js"
+    }
   },
   "files": [
+    "dist",
     "bin",
     "README.md"
   ],
   "scripts": {
-    "build": "node -e \"\"",
-    "check-types": "node -e \"\"",
+    "build": "tsup",
+    "check-types": "tsc --noEmit",
     "lint": "biome ci .",
-    "test": "node -e \"\""
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
+    "cac": "^7.0.0"
+  },
+  "devDependencies": {
     "@midlane/cli": "0.0.0",
-    "@midlane/runtime": "0.0.0"
+    "@midlane/config": "0.0.0",
+    "@midlane/generator": "0.0.0",
+    "@midlane/parser": "0.0.0",
+    "@midlane/runtime": "0.0.0",
+    "@types/node": "^25.6.0",
+    "tsup": "^8.5.1",
+    "typescript": "5.9.2",
+    "vitest": "^4.1.4"
   }
 }

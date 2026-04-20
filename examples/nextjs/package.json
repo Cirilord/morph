@@ -5,13 +5,12 @@
   "scripts": {
     "build": "yarn generate && next build --webpack",
     "dev": "yarn generate && next dev --webpack",
-    "generate": "node ../../packages/cli/dist/index.js generate",
+    "generate": "node ../../packages/midlane/bin/midlane.js generate",
     "start": "next start",
     "check-types": "yarn generate && next typegen && tsc --noEmit"
   },
   "dependencies": {
-    "@midlane/config": "file:../../packages/config",
-    "@midlane/runtime": "file:../../packages/runtime",
+    "midlane": "file:../../packages/midlane",
     "next": "16.2.4",
     "react": "19.2.5",
     "react-dom": "19.2.5"

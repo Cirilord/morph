@@ -1,5 +1,5 @@
 #!/usr/bin/env node
 
-import { runCli } from '@midlane/cli';
+import { runCli } from '../dist/cli.js';
 
 process.exitCode = await runCli(process.argv);

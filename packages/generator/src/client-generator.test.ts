@@ -107,7 +107,7 @@ describe('generateMidlaneClient', () => {
       {
         path: 'maps.ts',
         content: [
-          "import type { MapperObject } from '@midlane/runtime';",
+          "import type { MapperObject } from 'midlane/runtime';",
           '',
           'export const UserMap = {',
           '  id: { externalName: "usr_id" },',
@@ -140,7 +140,7 @@ describe('generateMidlaneClient', () => {
         path: 'client.ts',
         content: [
           "import type { AuthHeaders, CreateUserBody, ListUsersQuery, MidlaneClientOptions, User, UserIdParams } from './types.js';",
-          "import { MidlaneEngine } from '@midlane/runtime';",
+          "import { MidlaneEngine } from 'midlane/runtime';",
           "import { AuthHeadersMap, CreateUserBodyMap, ListUsersQueryMap, UserMap } from './maps.js';",
           '',
           'const defaultBaseUrl = "https://api.example.com";',

@@ -53,7 +53,7 @@ function generateClient(schema: ApiSchema, options: GenerateMidlaneClientOptions
   const mapImports = collectClientMapImports(schema, objectTypeNames);
   const imports = [
     `import type { ${typeImports.join(', ')} } from './types.js';`,
-    "import { MidlaneEngine } from '@midlane/runtime';",
+    "import { MidlaneEngine } from 'midlane/runtime';",
     mapImports.length > 0 ? `import { ${mapImports.join(', ')} } from './maps.js';` : undefined,
   ].filter((line) => line !== undefined);
 
@@ -358,7 +358,7 @@ function generateMaps(types: TypeDeclaration[]): string {
   const mapEntries = types.map((type) => `  ${type.name}: ${type.name}Map,`);
 
   return [
-    "import type { MapperObject } from '@midlane/runtime';",
+    "import type { MapperObject } from 'midlane/runtime';",
     '',
     ...mapDeclarations,
     '',
