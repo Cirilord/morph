@@ -54,8 +54,9 @@ jobs:
         run: npm whoami
 
       - name: Release
+        working-directory: packages/midlane
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: yarn workspace midlane release-it --ci --increment ${{ inputs.increment }}
+        run: yarn release-it --ci --increment ${{ inputs.increment }}

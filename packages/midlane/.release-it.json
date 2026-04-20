@@ -4,7 +4,8 @@
     "tagName": "v${version}"
   },
   "npm": {
-    "publish": true
+    "publish": true,
+    "tokenRef": "NODE_AUTH_TOKEN"
   },
   "github": {
     "release": true
